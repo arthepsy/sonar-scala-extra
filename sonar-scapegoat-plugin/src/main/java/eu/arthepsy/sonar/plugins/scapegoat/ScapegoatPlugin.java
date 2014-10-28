@@ -33,7 +33,7 @@ public class ScapegoatPlugin extends SonarPlugin {
 
     @Override
     public List getExtensions() {
-        ImmutableList.Builder builder = ImmutableList.builder();
+        ImmutableList.Builder<Object> builder = ImmutableList.builder();
         builder.addAll(ScapegoatConfiguration.getPropertyDefinitions());
         builder.add(ScapegoatRulesDefinition.class);
         builder.add(ScapegoatQualityProfile.class);
