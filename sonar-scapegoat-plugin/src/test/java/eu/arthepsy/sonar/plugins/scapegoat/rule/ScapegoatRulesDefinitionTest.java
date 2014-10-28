@@ -21,23 +21,26 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package eu.arthepsy.sonar.plugins.scapegoat;
+package eu.arthepsy.sonar.plugins.scapegoat.rule;
 
-import com.google.common.collect.ImmutableList;
-import eu.arthepsy.sonar.plugins.scapegoat.rule.ScapegoatQualityProfile;
-import eu.arthepsy.sonar.plugins.scapegoat.rule.ScapegoatRulesDefinition;
-import org.sonar.api.SonarPlugin;
-import java.util.List;
+import org.junit.Test;
+import static org.fest.assertions.Assertions.assertThat;
 
-public class ScapegoatPlugin extends SonarPlugin {
+import org.sonar.api.server.rule.RulesDefinition;
 
-    @Override
-    public List getExtensions() {
-        ImmutableList.Builder builder = ImmutableList.builder();
-        builder.addAll(ScapegoatConfiguration.getPropertyDefinitions());
-        builder.add(ScapegoatRulesDefinition.class);
-        builder.add(ScapegoatQualityProfile.class);
-        return builder.build();
+public class ScapegoatRulesDefinitionTest {
+
+    @Test
+    public void testRepository() {
+        ScapegoatRulesDefinition def = new ScapegoatRulesDefinition();
+        RulesDefinition.Context context = new RulesDefinition.Context();
+        def.define(context);
+
+        RulesDefinition.Repository repo = context.repository("scapegoat");
+        assertThat(repo).isNotNull();
+        assertThat(repo.name()).isEqualTo("Scapegoat");
+        assertThat(repo.language()).isEqualTo("scala");
+        assertThat(repo.rules()).hasSize(117);
     }
 
 }

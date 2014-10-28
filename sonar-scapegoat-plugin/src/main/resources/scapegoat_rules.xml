@@ -1,0 +1,713 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<rules>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.empty.EmptyFor</key>
+    <name><![CDATA[Checks for empty `for` loops]]></name>
+    <description><![CDATA[Checks for empty `for` loops]]></description>
+    <severity>MINOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.unneccesary.UnnecessaryToString</key>
+    <name><![CDATA[Checks for unnecessary `toString` on instances of String]]></name>
+    <description><![CDATA[Unnecessary toString on instanceo of String]]></description>
+    <severity>MINOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.exception.SwallowedException</key>
+    <name><![CDATA[Finds catch blocks that don't handle caught exceptions]]></name>
+    <description><![CDATA[Empty catch block]]></description>
+    <severity>MINOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.style.AvoidOperatorOverload</key>
+    <name><![CDATA[Checks for mental symbolic method names]]></name>
+    <description><![CDATA[Scala style guide advocates against routinely using operators as method names.
+See http://docs.scala-lang.org/style/naming-conventions.html#symbolic-method-names]]></description>
+    <severity>INFO</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.EmptyCaseClass</key>
+    <name><![CDATA[Checks for case classes like `case class Faceman()`]]></name>
+    <description><![CDATA[Empty case class can be rewritten as a case object]]></description>
+    <severity>INFO</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.math.UseLog1P</key>
+    <name><![CDATA[Checks for use of `math.log(x + 1)` instead of `math.log1p(x)`]]></name>
+    <description><![CDATA[math.log1p(x) is clearer and more performant than math.log(x + 1)]]></description>
+    <severity>INFO</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.option.OptionGet</key>
+    <name><![CDATA[Checks for `Option.get`]]></name>
+    <description><![CDATA[Checks for `Option.get`]]></description>
+    <severity>MAJOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.RedundantFinalModifierOnMethod</key>
+    <name><![CDATA[Redundant final modifier on method]]></name>
+    <description><![CDATA[Symbol cannot be overriden, final modifer is redundant]]></description>
+    <severity>INFO</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.nulls.NullParameter</key>
+    <name><![CDATA[Null parameter]]></name>
+    <description><![CDATA[Null is used as a method parameter]]></description>
+    <severity>MINOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.string.ArraysInFormat</key>
+    <name><![CDATA[Checks for arrays passed to String.format]]></name>
+    <description><![CDATA[Checks for arrays passed to String.format]]></description>
+    <severity>MAJOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.TypeShadowing</key>
+    <name><![CDATA[Checks for shadowed type parameters in methods]]></name>
+    <description><![CDATA[Method declares shadowed type parameter]]></description>
+    <severity>MINOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.math.ModOne</key>
+    <name><![CDATA[Checks for `x % 1` which will always return `0`]]></name>
+    <description><![CDATA[Any expression x % 1 will always return 0.]]></description>
+    <severity>MINOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.inference.BoundedByFinalType</key>
+    <name><![CDATA[Looks for types with upper bounds of a final type]]></name>
+    <description><![CDATA[Pointless type bound. Type parameter can only be a single value]]></description>
+    <severity>MINOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.collections.ExistsSimplifableToContains</key>
+    <name><![CDATA[`exists(x => x == b)` replaceable with `contains(b)`]]></name>
+    <description><![CDATA[exists(x => x == y) can be replaced with contains(y)]]></description>
+    <severity>INFO</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.VariableShadowing</key>
+    <name><![CDATA[Warns for variables that shadow variables or parameters in an outer scope with the same name]]></name>
+    <description><![CDATA[Variable is shadowed]]></description>
+    <severity>MINOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.math.UseLog10</key>
+    <name><![CDATA[Checks for use of `math.log(x)/math.log(10)` instead of `math.log10(x)`]]></name>
+    <description><![CDATA[math.log10(x) is clearer and more performant than math.log(x)/math.log(10)]]></description>
+    <severity>INFO</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.collections.CollectionNamingConfusion</key>
+    <name><![CDATA[Checks for variables that are confusingly named]]></name>
+    <description><![CDATA[An instanceof List is confusingly referred to by a variable called/containing set]]></description>
+    <severity>INFO</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.collections.CollectionPromotionToAny</key>
+    <name><![CDATA[Checks for collection operations that promote the collection to `Any`]]></name>
+    <description><![CDATA[Checks for collection operations that promote the collection to `Any`]]></description>
+    <severity>MINOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.collections.NegativeSeqPad</key>
+    <name><![CDATA[Negative seq padTo]]></name>
+    <description><![CDATA[Negative seq padTo]]></description>
+    <severity>MAJOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.empty.EmptySynchronizedBlock</key>
+    <name><![CDATA[Looks for empty synchronized blocks]]></name>
+    <description><![CDATA[Looks for empty synchronized blocks]]></description>
+    <severity>MINOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.collections.PredefIterableIsMutable</key>
+    <name><![CDATA[Default Iterable is mutable]]></name>
+    <description><![CDATA[Iterable aliases scala.collection.mutable.Iterable. Did you intend to use an immutable Iterable?]]></description>
+    <severity>INFO</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.naming.MethodNames</key>
+    <name><![CDATA[Warns on method names that don't adhere to the Scala style guidelines]]></name>
+    <description><![CDATA[Methods should be in camelCase style with the first letter lower-case. See http://docs.scala-lang.org/style/naming-conventions.html#methods]]></description>
+    <severity>INFO</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.collections.DuplicateSetValue</key>
+    <name><![CDATA[Checks for duplicate values in set literals]]></name>
+    <description><![CDATA[A set value is overwriten by a later entry]]></description>
+    <severity>MINOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.collections.ListAppend</key>
+    <name><![CDATA[Checks for List :+ which is O(n)]]></name>
+    <description><![CDATA[List append is O(n). For large lists, consider using cons (::) or another data structure such as ListBuffer or Vector and converting to a List once built.]]></description>
+    <severity>INFO</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.exception.CatchNpe</key>
+    <name><![CDATA[Checks for try blocks that catch null pointer exceptions]]></name>
+    <description><![CDATA[CatchNpe.this]]></description>
+    <severity>MAJOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.matching.PartialFunctionInsteadOfMatch</key>
+    <name><![CDATA[Warns when you could use a partial function directly instead of a match block]]></name>
+    <description><![CDATA[A map match can be replaced with a partial function for greater readability]]></description>
+    <severity>INFO</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.math.BigDecimalScaleWithoutRoundingMode</key>
+    <name><![CDATA[BigDecimal setScale() without rounding mode]]></name>
+    <description><![CDATA[When using setScale() on a BigDecimal without setting the rounding mode, this can throw an exception if rounding is required. Did you mean to call setScale(s, RoundingMode.XYZ)]]></description>
+    <severity>MINOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.string.IllegalFormatString</key>
+    <name><![CDATA[Looks for invalid format strings]]></name>
+    <description><![CDATA[Checks for a format string that is not invalid, such as invalid conversions, invalid flags, etc. Eg, `"% s"`, `"%qs"`, `%.-4f"`]]></description>
+    <severity>MAJOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.inference.MethodReturningAny</key>
+    <name><![CDATA[Checks for defs that are defined or inferred to return `Any`]]></name>
+    <description><![CDATA[Method returns Any. Consider using a more specialized type]]></description>
+    <severity>MINOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.empty.EmptyMethod</key>
+    <name><![CDATA[Looks for empty methods]]></name>
+    <description><![CDATA[Empty method statement]]></description>
+    <severity>MINOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.unneccesary.ConstantIf</key>
+    <name><![CDATA[Checks for code where the if condition compiles to a constant]]></name>
+    <description><![CDATA[Checks for if statements where the condition is always true or false. Not only checks for the boolean literals, but also any expression that the compiler is able to turn into a constant value. Eg, `if (0 < 1) then else that`]]></description>
+    <severity>MINOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.unneccesary.VarCouldBeVal</key>
+    <name><![CDATA[Checks for `var`s that could be declared as `val`s]]></name>
+    <description><![CDATA[var is never written to, so could be a val]]></description>
+    <severity>MINOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.collections.DuplicateMapKey</key>
+    <name><![CDATA[Checks for duplicate key names in Map literals]]></name>
+    <description><![CDATA[A map key is overwriten by a later entry]]></description>
+    <severity>MINOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.imports.DuplicateImport</key>
+    <name><![CDATA[Checks for import statements that import the same selector]]></name>
+    <description><![CDATA[name]]></description>
+    <severity>INFO</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.style.ParameterlessMethodReturnsUnit</key>
+    <name><![CDATA[Checks for `def foo : Unit`]]></name>
+    <description><![CDATA[Methods should be defined with () if they have side effects. A method returning unit must have side effects, otherwise it can be removed.]]></description>
+    <severity>MINOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.collections.JavaConversionsUse</key>
+    <name><![CDATA[Checks for use of implicit Java conversions]]></name>
+    <description><![CDATA[Use of java conversions can lead to unusual behaviour. It is recommended to use JavaConverters]]></description>
+    <severity>MINOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.naming.ClassNames</key>
+    <name><![CDATA[Ensures class names adhere to the style guidelines]]></name>
+    <description><![CDATA[Class names should begin with uppercase letter ]]></description>
+    <severity>INFO</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.string.IncorrectNumberOfArgsToFormat</key>
+    <name><![CDATA[Checks for wrong number of arguments to `String.format`]]></name>
+    <description><![CDATA[Checks for an incorrect number of arguments to String.format. Eg, `"%s %s %f".format("need", "three")` flags an error because the format string specifies 3 parameters but the call only provides 2.]]></description>
+    <severity>MAJOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.RedundantFinalModifierOnCaseClass</key>
+    <name><![CDATA[Redundant final modifier on case class]]></name>
+    <description><![CDATA[Case classes cannot be extended, final modifer is redundant]]></description>
+    <severity>INFO</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.collections.PreferSeqEmpty</key>
+    <name><![CDATA[Prefer Seq.empty]]></name>
+    <description><![CDATA[Seq[T]() creates a new instance. Consider Seq.empty which does not allocate a new object.]]></description>
+    <severity>INFO</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.collections.ComparisonToEmptyList</key>
+    <name><![CDATA[Checks for code like `a == List()` or `a == Nil`]]></name>
+    <description><![CDATA[Prefer use of isEmpty instead of comparison to an empty List]]></description>
+    <severity>INFO</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.option.ImpossibleOptionSizeCondition</key>
+    <name><![CDATA[Checks for code like `option.size > 2` which can never be true]]></name>
+    <description><![CDATA[Checks for code like `option.size > 2` which can never be true]]></description>
+    <severity>MAJOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.collections.FilterDotSizeComparison</key>
+    <name><![CDATA[filter().isEmpty instead of !exists()]]></name>
+    <description><![CDATA[.filter(x => Bool).isEmpty can be replaced with !exists(x => Bool)]]></description>
+    <severity>INFO</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.unsafe.AsInstanceOf</key>
+    <name><![CDATA[Checks for use of `asInstanceOf`]]></name>
+    <description><![CDATA[asInstanceOf used near Consider using pattern matching.]]></description>
+    <severity>MINOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.math.BigDecimalDoubleConstructor</key>
+    <name><![CDATA[Checks for use of `BigDecimal(double)` which can be unsafe]]></name>
+    <description><![CDATA[The results of this constructor can be somewhat unpredictable. 
+Eg, writing new BigDecimal(0.1) in Java creates a BigDecimal which is actually equal to 0.1000000000000000055511151231257827021181583404541015625. 
+This is because 0.1 cannot be represented exactly as a double.]]></description>
+    <severity>MINOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.unneccesary.UnnecessaryToInt</key>
+    <name><![CDATA[Checks for unnecessary `toInt` on instances of Int]]></name>
+    <description><![CDATA[Unnecessary invocation of toInt on instance of Int]]></description>
+    <severity>MINOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.exception.IncorrectlyNamedExceptions</key>
+    <name><![CDATA[Checks for exceptions that are not called *Exception and vice versa]]></name>
+    <description><![CDATA[Checks for exceptions that are not called *Exception and vice versa]]></description>
+    <severity>MAJOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.string.EmptyInterpolatedString</key>
+    <name><![CDATA[Looks for interpolated strings that have no arguments]]></name>
+    <description><![CDATA[String declared as interpolated but has no parameters]]></description>
+    <severity>MAJOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.unneccesary.UnnecessaryIf</key>
+    <name><![CDATA[Checks for code like `if (expr) true else false`]]></name>
+    <description><![CDATA[If comparison is not needed. Use the negated condition. Eg, instead of if (a ==b) false else true, simply use !(a == b).]]></description>
+    <severity>INFO</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.unsafe.IsInstanceOf</key>
+    <name><![CDATA[Checks for use of `isInstanceOf`]]></name>
+    <description><![CDATA[Consider using a pattern match rather than isInstanceOf]]></description>
+    <severity>MINOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.option.EitherGet</key>
+    <name><![CDATA[Checks for use of .get on Left or Right]]></name>
+    <description><![CDATA[Checks for use of .get on Left or Right]]></description>
+    <severity>MAJOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.empty.EmptyTryBlock</key>
+    <name><![CDATA[Looks for empty try blocks]]></name>
+    <description><![CDATA[Looks for empty try blocks]]></description>
+    <severity>MINOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.collections.CollectionNegativeIndex</key>
+    <name><![CDATA[Checks for negative access on a sequence eg `list.get(-1)`]]></name>
+    <description><![CDATA[Checks for negative access on a sequence eg `list.get(-1)`]]></description>
+    <severity>MINOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.PublicFinalizer</key>
+    <name><![CDATA[Checks for overriden finalizes that are public]]></name>
+    <description><![CDATA[Public finalizer should be avoided as finalizers should not be programatically invoked]]></description>
+    <severity>INFO</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.MaxParameters</key>
+    <name><![CDATA[Checks for methods that have over 10 parameters]]></name>
+    <description><![CDATA[Method has too many parameters. Consider refactoring to a containing instance.]]></description>
+    <severity>INFO</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.DoubleNegation</key>
+    <name><![CDATA[Checks for code like `!(!b)`]]></name>
+    <description><![CDATA[Double negation can be removed]]></description>
+    <severity>INFO</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.collections.PredefTraversableIsMutable</key>
+    <name><![CDATA[Default Traversable is mutable]]></name>
+    <description><![CDATA[Traversable aliases scala.collection.mutable.Traversable. Did you intend to use an immutable Traversable?]]></description>
+    <severity>INFO</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.math.DivideByOne</key>
+    <name><![CDATA[Checks for divide by one, which always returns the original value]]></name>
+    <description><![CDATA[Divide by one will always return the original value]]></description>
+    <severity>MINOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.collections.TraversableHead</key>
+    <name><![CDATA[Looks for unsafe usage of `Traversable.head`]]></name>
+    <description><![CDATA[Looks for unsafe usage of `Traversable.head`]]></description>
+    <severity>MAJOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.collections.UnsafeContains</key>
+    <name><![CDATA[Checks for `List.contains(value)` for invalid types]]></name>
+    <description><![CDATA[Checks for `List.contains(value)` for invalid types. The method for contains accepts any types. This inspection finds situations when you have a list of type A and you are checking for contains on type B which cannot hold.]]></description>
+    <severity>MAJOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.collections.SwapSortFilter</key>
+    <name><![CDATA[`sort.filter` can be replaced with `filter.sort` for performance]]></name>
+    <description><![CDATA[Swap sort.filter for filter.sort for better performance]]></description>
+    <severity>INFO</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.math.UseExpM1</key>
+    <name><![CDATA[Checks for use of `math.exp(x) - 1` instead of `math.expm1(x)`]]></name>
+    <description><![CDATA[math.expm1(x) is clearer and more performant than math.exp(x) - 1]]></description>
+    <severity>INFO</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.math.UseCbrt</key>
+    <name><![CDATA[Checks for use of `math.pow` for calculating `math.cbrt`]]></name>
+    <description><![CDATA[math.cbrt is clearer and more performant than math.pow(x, 1/3)]]></description>
+    <severity>INFO</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.equality.ComparingUnrelatedTypes</key>
+    <name><![CDATA[Checks for equality comparisons that cannot succeed]]></name>
+    <description><![CDATA[Checks for equality comparisons that cannot succeed because the types are unrelated. Eg `"string" == BigDecimal(1.0)`. The scala compiler has a less strict version of this inspection.]]></description>
+    <severity>MAJOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.VarClosure</key>
+    <name><![CDATA[Finds closures that reference var]]></name>
+    <description><![CDATA[Closing over a var can lead to subtle bugs]]></description>
+    <severity>MINOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.math.BrokenOddness</key>
+    <name><![CDATA[checks for a % 2 == 1 for oddness because this fails on negative numbers]]></name>
+    <description><![CDATA[Potentially broken odd check.
+Code that attempts to check for oddness using x % 2 == 1 will fail on negative numbers. Consider using x % 2 != 0]]></description>
+    <severity>MINOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.NoOpOverride</key>
+    <name><![CDATA[No op Override]]></name>
+    <description><![CDATA[This method is overriden yet only calls super]]></description>
+    <severity>INFO</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.naming.ObjectNames</key>
+    <name><![CDATA[Ensures object names adhere to the Scala style guidelines]]></name>
+    <description><![CDATA[Object names should only contain alphanum chars ]]></description>
+    <severity>INFO</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.equality.ComparingFloatingPointTypes</key>
+    <name><![CDATA[Checks for equality checks on floating point types]]></name>
+    <description><![CDATA[ComparingFloatingPointTypes.this]]></description>
+    <severity>MAJOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.math.UseSqrt</key>
+    <name><![CDATA[Checks for use of `math.pow` for calculating `math.sqrt`]]></name>
+    <description><![CDATA[math.sqrt is clearer and more performant than math.pow(x, 0.5)]]></description>
+    <severity>INFO</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.math.ZeroNumerator</key>
+    <name><![CDATA[Checks for dividing by 0 by a number, eg `0 / x` which will always return `0`]]></name>
+    <description><![CDATA[Dividing zero by any number will always return zero]]></description>
+    <severity>MINOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.collections.FilterDotIsEmpty</key>
+    <name><![CDATA[`.filter(x => Bool).isEmpty` can be replaced with `!exists(x => Bool)`]]></name>
+    <description><![CDATA[.filter(x => Bool).isEmpty can be replaced with !exists(x => Bool)]]></description>
+    <severity>INFO</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.collections.ListSize</key>
+    <name><![CDATA[Checks for `List.size` which is O(n).]]></name>
+    <description><![CDATA[Checks for .size on an instance of List. Eg, `val a = List(1,2,3); a.size`
+
+*Rationale* List.size is O(n) so for performance reasons if .size is needed on a list that could be large, consider using an alternative with O(1), eg Array, Vector or ListBuffer.]]></description>
+    <severity>INFO</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.style.SimplifyBooleanExpression</key>
+    <name><![CDATA[`b == false` can be simplified to `!b`]]></name>
+    <description><![CDATA[Boolean expressions such as x == false can be re-written as !x]]></description>
+    <severity>INFO</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.string.InvalidRegex</key>
+    <name><![CDATA[Checks for invalid regex literals]]></name>
+    <description><![CDATA[Checks for invalid regex literals that would fail at compile time. Either dangling metacharacters, or unclosed escape characters, etc that kind of thing.]]></description>
+    <severity>INFO</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.collections.ArrayEquals</key>
+    <name><![CDATA[Checks for comparison of arrays using `==` which will always return false]]></name>
+    <description><![CDATA[Array equals is not an equality check. Use a.deep == b.deep or convert to another collection type]]></description>
+    <severity>INFO</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.string.LooksLikeInterpolatedString</key>
+    <name><![CDATA[Finds strings that look like they should be interpolated but are not]]></name>
+    <description><![CDATA[tr]]></description>
+    <severity>MINOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.math.NanComparison</key>
+    <name><![CDATA[Checks for `x == Double.NaN` which will always fail]]></name>
+    <description><![CDATA[NaN comparision will always fail. Use value.isNan instead.]]></description>
+    <severity>MAJOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.collections.FindAndNotEqualsNoneReplaceWithExists</key>
+    <name><![CDATA[filter(_.isDefined).map(_.get)]]></name>
+    <description><![CDATA[.filter(_.isDefined).map(_.get) can be replaced with flatten]]></description>
+    <severity>INFO</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.RedundantFinalModifierOnVar</key>
+    <name><![CDATA[Redundant final modifier on var]]></name>
+    <description><![CDATA[This var cannot be overriden, final modifer is redundant]]></description>
+    <severity>INFO</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.collections.NegationNonEmpty</key>
+    <name><![CDATA[`!Traversable.nonEmpty` can be replaced with `Traversable.isEmpty`]]></name>
+    <description><![CDATA[`!Traversable.nonEmpty` can be replaced with `Traversable.isEmpty`]]></description>
+    <severity>INFO</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.exception.UnreachableCatch</key>
+    <name><![CDATA[Checks for catch clauses that cannot be reached]]></name>
+    <description><![CDATA[Checks for catch clauses that cannot be reached. This means the exception is dead and if you want that exception to take precedence you should move up further up the case list.]]></description>
+    <severity>MINOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.collections.FilterOptionAndGet</key>
+    <name><![CDATA[`.filter(_.isDefined).map(_.get)` can be replaced with `flatten`]]></name>
+    <description><![CDATA[.filter(_.isDefined).map(_.get) can be replaced with flatten]]></description>
+    <severity>INFO</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.empty.EmptyWhileBlock</key>
+    <name><![CDATA[Looks for empty while loops]]></name>
+    <description><![CDATA[Looks for empty while loops]]></description>
+    <severity>MINOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.unsafe.TryGet</key>
+    <name><![CDATA[Checks for use of `Try.get`]]></name>
+    <description><![CDATA[Checks for use of `Try.get`]]></description>
+    <severity>MAJOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.matching.SuspiciousMatchOnClassObject</key>
+    <name><![CDATA[Finds code where matching is taking place on class literals]]></name>
+    <description><![CDATA[Finds code where matching is taking place on class literals]]></description>
+    <severity>MINOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.unsafe.FinalizerWithoutSuper</key>
+    <name><![CDATA[Checks for overriden finalizers that do not call super]]></name>
+    <description><![CDATA[Finalizers should call super.finalize() to ensure superclasses are able to run any finalization logic]]></description>
+    <severity>MINOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.equality.ComparisonWithSelf</key>
+    <name><![CDATA[Checks for equality checks with itself]]></name>
+    <description><![CDATA[Comparision with self will always yield true]]></description>
+    <severity>MINOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.inference.PointlessTypeBounds</key>
+    <name><![CDATA[Finds type bounds of the form `[A <: Any]` or `[A >: Nothing]`]]></name>
+    <description><![CDATA[Type bound resolves to Nothing <: T <: Any. Did you mean to put in other bounds]]></description>
+    <severity>MINOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.unneccesary.UnnecessaryReturnUse</key>
+    <name><![CDATA[Checks for use of `return` keyword in blocks]]></name>
+    <description><![CDATA[Checks for use of return in a function or method. Since the final expression of a block is always the return value, using return is unnecessary. Eg, `def foo = { println("hello"); return 12; }`]]></description>
+    <severity>INFO</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.collections.AvoidSizeEqualsZero</key>
+    <name><![CDATA[Traversable.size can be slow for some data structure, prefer .isEmpty]]></name>
+    <description><![CDATA[Traversable.size is slow for some implementations. Prefer.isEmpty which is O(1)]]></description>
+    <severity>MINOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.exception.CatchThrowable</key>
+    <name><![CDATA[Checks for try blocks that catch Throwable]]></name>
+    <description><![CDATA[Did you intend to catch all throwables, consider catching a more specific exception class]]></description>
+    <severity>MINOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.unneccesary.RedundantFinalizer</key>
+    <name><![CDATA[Checks for empty finalizers.]]></name>
+    <description><![CDATA[Checks for empty finalizers. This is redundant code and should be removed. Eg, `override def finalize : Unit = { }`]]></description>
+    <severity>MINOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.collections.FilterDotHead</key>
+    <name><![CDATA[`.filter(x => ).head` can be replaced with `find(x => ) match { .. } `]]></name>
+    <description><![CDATA[.filter(x => Bool).head can be replaced with find(x => Bool) and a match]]></description>
+    <severity>INFO</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.LonelySealedTrait</key>
+    <name><![CDATA[Checks for sealed traits which have no implementation]]></name>
+    <description><![CDATA[Sealed trait has no implementing classes]]></description>
+    <severity>MAJOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.VarUse</key>
+    <name><![CDATA[Checks for use of `var`]]></name>
+    <description><![CDATA[var used]]></description>
+    <severity>MINOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.option.OptionSize</key>
+    <name><![CDATA[Checks for `Option.size`]]></name>
+    <description><![CDATA[Checks for `Option.size`]]></description>
+    <severity>MAJOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.string.StripMarginOnRegex</key>
+    <name><![CDATA[Checks for .stripMargin on regex strings that contain a pipe]]></name>
+    <description><![CDATA[Strip margin will strip | from regex - possible corrupted regex]]></description>
+    <severity>MAJOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.collections.PredefSeqIsMutable</key>
+    <name><![CDATA[Predef.Seq is mutable]]></name>
+    <description><![CDATA[Predef.Seq aliases scala.collection.mutable.Seq. Did you intend to use an immutable Seq?]]></description>
+    <severity>INFO</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.collections.FilterDotHeadOption</key>
+    <name><![CDATA[`.filter(x =>).headOption` can be replaced with `find(x => )`]]></name>
+    <description><![CDATA[.filter(x => Bool).headOption can be replaced with find(x => Bool)]]></description>
+    <severity>INFO</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.AvoidToMinusOne</key>
+    <name><![CDATA[Checks for loops that use `x to n-1` instead of `x until n`]]></name>
+    <description><![CDATA[j to k - 1 can be better written as j until k]]></description>
+    <severity>INFO</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.inference.ProductWithSerializableInferred</key>
+    <name><![CDATA[Checks for vals that have `Product with Serializable` as their inferred type]]></name>
+    <description><![CDATA[It is unlikely that this was your target type]]></description>
+    <severity>MINOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.collections.FindDotIsDefined</key>
+    <name><![CDATA[`find(x => Bool).isDefined` can be replaced with `exist(x => Bool)`]]></name>
+    <description><![CDATA[.find(x => Bool).isDefined can be replaced with exists(x => Bool)]]></description>
+    <severity>INFO</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.imports.WildcardImport</key>
+    <name><![CDATA[Checks for wildcard imports]]></name>
+    <description><![CDATA[Wildcard import used]]></description>
+    <severity>MINOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.collections.AvoidSizeNotEqualsZero</key>
+    <name><![CDATA[Traversable.size can be slow for some data structure, prefer .nonEmpty]]></name>
+    <description><![CDATA[Traversable.size is slow for some implementations. Prefer.nonEmpty which is O(1)]]></description>
+    <severity>MINOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.collections.FilterDotSize</key>
+    <name><![CDATA[`.filter(x => Bool).size` can be replaced more concisely with with `count(x => Bool)`]]></name>
+    <description><![CDATA[.filter(x => Bool).size can be replaced with count(x => Bool)]]></description>
+    <severity>INFO</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.nulls.NullAssignment</key>
+    <name><![CDATA[Null assignment]]></name>
+    <description><![CDATA[Null assignment]]></description>
+    <severity>MINOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.empty.EmptyIfBlock</key>
+    <name><![CDATA[Checks for empty `if` blocks]]></name>
+    <description><![CDATA[Checks for empty `if` blocks]]></description>
+    <severity>MINOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.controlflow.WhileTrue</key>
+    <name><![CDATA[Checks for code that uses a `while(true)` or `do { } while(true)` block.]]></name>
+    <description><![CDATA[Checks for code that uses a `while(true)` or `do { } while(true)` block.
+
+*Rationale*: This type of code is usually not meant for production as it will not return normally. If you need to loop until interrupted then consider using a flag.]]></description>
+    <severity>MINOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.string.SubstringZero</key>
+    <name><![CDATA[Checks for `String.substring(0)`]]></name>
+    <description><![CDATA[Use of String.substring(0) will always return the same string]]></description>
+    <severity>INFO</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.AnyUse</key>
+    <name><![CDATA[AnyUse]]></name>
+    <description><![CDATA[Use of Any should be avoided]]></description>
+    <severity>INFO</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.unneccesary.UnusedMethodParameter</key>
+    <name><![CDATA[Checks for unused method parameters]]></name>
+    <description><![CDATA[Unused method parameter]]></description>
+    <severity>MINOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.string.ArraysToString</key>
+    <name><![CDATA[Checks for explicit toString calls on arrays]]></name>
+    <description><![CDATA[Checks for explicit toString calls on arrays. Since toString on an array does not perform a deep toString, like say scala's List, this is usually a mistake.]]></description>
+    <severity>MINOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.matching.RepeatedCaseBody</key>
+    <name><![CDATA[Checks for case statements which have the same body]]></name>
+    <description><![CDATA[Case body is repeated. Consider merging pattern clauses together]]></description>
+    <severity>MINOR</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.collections.PreferSetEmpty</key>
+    <name><![CDATA[Checks for Set() when could use Set.empty]]></name>
+    <description><![CDATA[Indicates where code using Set() could be replaced with Set.empty. Set() instantiates a new instance each time it is invoked, whereas Set.emtpy returns a pre-instantiated instance.]]></description>
+    <severity>INFO</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.collections.NegationIsEmpty</key>
+    <name><![CDATA[`!Traversable.isEmpty` can be replaced with `Traversable.nonEmpty`]]></name>
+    <description><![CDATA[`!Traversable.isEmpty` can be replaced with `Traversable.nonEmpty`]]></description>
+    <severity>INFO</severity>
+  </rule>
+  <rule>
+    <key>com.sksamuel.scapegoat.inspections.collections.ComparisonToEmptySet</key>
+    <name><![CDATA[Checks for code like `a == Set()` or `a == Set.empty`]]></name>
+    <description><![CDATA[Prefer use of isEmpty instead of comparison to an empty List]]></description>
+    <severity>INFO</severity>
+  </rule>
+</rules>

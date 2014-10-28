@@ -24,20 +24,26 @@
 package eu.arthepsy.sonar.plugins.scapegoat;
 
 import com.google.common.collect.ImmutableList;
-import eu.arthepsy.sonar.plugins.scapegoat.rule.ScapegoatQualityProfile;
-import eu.arthepsy.sonar.plugins.scapegoat.rule.ScapegoatRulesDefinition;
-import org.sonar.api.SonarPlugin;
+import org.sonar.api.PropertyType;
+import org.sonar.api.config.PropertyDefinition;
+
 import java.util.List;
 
-public class ScapegoatPlugin extends SonarPlugin {
+public class ScapegoatConfiguration {
+    public static final String CATEGORY = "Scala";
+    public static final String SUBCATEGORY = "Scapegoat";
 
-    @Override
-    public List getExtensions() {
-        ImmutableList.Builder builder = ImmutableList.builder();
-        builder.addAll(ScapegoatConfiguration.getPropertyDefinitions());
-        builder.add(ScapegoatRulesDefinition.class);
-        builder.add(ScapegoatQualityProfile.class);
-        return builder.build();
+    public static final String REPORT_PATH_PROPERTY_KEY = "sonar.scala.scapegoat.reportPath";
+
+    public static List<PropertyDefinition> getPropertyDefinitions() {
+        ImmutableList.Builder<PropertyDefinition> properties = ImmutableList.builder();
+        properties.add(PropertyDefinition.builder(REPORT_PATH_PROPERTY_KEY)
+                .category(CATEGORY).subCategory(SUBCATEGORY)
+                .index(0).name("Scapegoat report path")
+                .description("Path to generated scapegoat xml report.")
+                .type(PropertyType.STRING).defaultValue("target/scapegoat-report/scapegoat.xml")
+                .build());
+        return properties.build();
     }
 
 }

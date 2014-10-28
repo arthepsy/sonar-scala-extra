@@ -21,23 +21,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package eu.arthepsy.sonar.plugins.scapegoat;
+package eu.arthepsy.sonar.plugins.scapegoat.util;
 
-import com.google.common.collect.ImmutableList;
-import eu.arthepsy.sonar.plugins.scapegoat.rule.ScapegoatQualityProfile;
-import eu.arthepsy.sonar.plugins.scapegoat.rule.ScapegoatRulesDefinition;
-import org.sonar.api.SonarPlugin;
-import java.util.List;
+import org.apache.commons.lang.StringUtils;
+import org.codehaus.staxmate.SMInputFactory;
+import org.codehaus.staxmate.in.SMInputCursor;
 
-public class ScapegoatPlugin extends SonarPlugin {
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
 
-    @Override
-    public List getExtensions() {
-        ImmutableList.Builder builder = ImmutableList.builder();
-        builder.addAll(ScapegoatConfiguration.getPropertyDefinitions());
-        builder.add(ScapegoatRulesDefinition.class);
-        builder.add(ScapegoatQualityProfile.class);
-        return builder.build();
+public final class XmlUtils {
+
+    public static SMInputFactory createFactory() {
+        XMLInputFactory xmlFactory = XMLInputFactory.newInstance();
+        xmlFactory.setProperty(XMLInputFactory.IS_COALESCING, Boolean.TRUE);
+        xmlFactory.setProperty(XMLInputFactory.IS_COALESCING, Boolean.TRUE);
+        xmlFactory.setProperty(XMLInputFactory.IS_NAMESPACE_AWARE, Boolean.FALSE);
+        xmlFactory.setProperty(XMLInputFactory.SUPPORT_DTD, Boolean.FALSE);
+        xmlFactory.setProperty(XMLInputFactory.IS_VALIDATING, Boolean.FALSE);
+        SMInputFactory inputFactory = new SMInputFactory(xmlFactory);
+        return inputFactory;
+    }
+
+    public static String getNodeText(SMInputCursor cursor) throws XMLStreamException {
+        return StringUtils.trim(cursor.collectDescendantText(false));
     }
 
 }
