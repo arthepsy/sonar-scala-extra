@@ -31,7 +31,9 @@ import org.codehaus.staxmate.in.SMInputCursor;
 import org.sonar.api.profiles.ProfileDefinition;
 import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.rule.RuleStatus;
+import org.sonar.api.rule.Severity;
 import org.sonar.api.rules.Rule;
+import org.sonar.api.rules.RulePriority;
 import org.sonar.api.utils.ValidationMessages;
 import eu.arthepsy.sonar.plugins.scapegoat.language.Scala;
 import eu.arthepsy.sonar.plugins.scapegoat.util.XmlUtils;
@@ -67,13 +69,15 @@ public class ScapegoatQualityProfile extends ProfileDefinition {
     }
 
     private void processRule(RulesProfile profile, SMInputCursor ruleC, ValidationMessages messages) throws XMLStreamException {
-        String key = null, status = null;
+        String key = null, severity = Severity.defaultSeverity(), status = null;
 
         SMInputCursor cursor = ruleC.childElementCursor();
         while (cursor.getNext() != null) {
             String nodeName = cursor.getLocalName();
             if (StringUtils.equalsIgnoreCase("key", nodeName)) {
                 key = XmlUtils.getNodeText(cursor);
+            } else if (StringUtils.equalsIgnoreCase("severity", nodeName)) {
+                severity = XmlUtils.getNodeText(cursor);
             } else if (StringUtils.equalsIgnoreCase("status", nodeName)) {
                 status = XmlUtils.getNodeText(cursor);
             }
@@ -81,7 +85,7 @@ public class ScapegoatQualityProfile extends ProfileDefinition {
         if (status != null && RuleStatus.valueOf(status) != RuleStatus.READY) {
             return;
         }
-        profile.activateRule(Rule.create(ScapegoatRulesDefinition.SCAPEGOAT_REPOSITORY, key), null);
+        profile.activateRule(Rule.create(ScapegoatRulesDefinition.SCAPEGOAT_REPOSITORY, key), RulePriority.valueOf(severity));
     }
 
 }
