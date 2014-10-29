@@ -24,7 +24,9 @@
 package eu.arthepsy.sonar.plugins.scapegoat;
 
 import com.google.common.collect.ImmutableList;
+import eu.arthepsy.sonar.plugins.scapegoat.language.Scala;
 import eu.arthepsy.sonar.plugins.scapegoat.rule.ScapegoatQualityProfile;
+import eu.arthepsy.sonar.plugins.scapegoat.rule.ScapegoatReportSensor;
 import eu.arthepsy.sonar.plugins.scapegoat.rule.ScapegoatRulesDefinition;
 import org.sonar.api.SonarPlugin;
 import java.util.List;
@@ -35,8 +37,10 @@ public class ScapegoatPlugin extends SonarPlugin {
     public List getExtensions() {
         ImmutableList.Builder<Object> builder = ImmutableList.builder();
         builder.addAll(ScapegoatConfiguration.getPropertyDefinitions());
+        builder.add(Scala.class);
         builder.add(ScapegoatRulesDefinition.class);
         builder.add(ScapegoatQualityProfile.class);
+        builder.add(ScapegoatReportSensor.class);
         return builder.build();
     }
 

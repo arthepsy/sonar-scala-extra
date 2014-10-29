@@ -23,11 +23,14 @@
  */
 package eu.arthepsy.sonar.plugins.scapegoat.rule;
 
+import eu.arthepsy.sonar.plugins.scapegoat.ScapegoatConfiguration;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.staxmate.SMInputFactory;
 import org.codehaus.staxmate.in.SMHierarchicCursor;
 import org.codehaus.staxmate.in.SMInputCursor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonar.api.rule.RuleStatus;
 import org.sonar.api.rule.Severity;
 import org.sonar.api.server.rule.RulesDefinition;
@@ -40,6 +43,9 @@ import java.io.InputStream;
 public class ScapegoatRulesDefinition implements RulesDefinition {
 
     public static final String SCAPEGOAT_REPOSITORY = "scapegoat";
+
+    private static final Logger LOG = LoggerFactory.getLogger(ScapegoatRulesDefinition.class);
+    private static final String LOG_PREFIX = ScapegoatConfiguration.LOG_PREFIX;
 
     @Override
     public void define(Context context) {
@@ -54,7 +60,7 @@ public class ScapegoatRulesDefinition implements RulesDefinition {
                 this.processRule(repository, ruleC);
             }
         } catch (XMLStreamException e) {
-            throw new IllegalStateException("Scapegoat rules xml file is not valid", e);
+            LOG.error(LOG_PREFIX + "rules file is not valid", e);
         } finally {
             IOUtils.closeQuietly(stream);
         }
@@ -82,6 +88,7 @@ public class ScapegoatRulesDefinition implements RulesDefinition {
             }
         }
         RulesDefinition.NewRule rule = repository.createRule(key)
+            .setInternalKey(key)
             .setName(name)
             .setMarkdownDescription(description)
             .setSeverity(severity)

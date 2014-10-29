@@ -33,6 +33,7 @@ public class ScapegoatConfiguration {
     public static final String CATEGORY = "Scala";
     public static final String SUBCATEGORY = "Scapegoat";
 
+    public static final String LOG_PREFIX = "[scapegoat]";
     public static final String REPORT_PATH_PROPERTY_KEY = "sonar.scala.scapegoat.reportPath";
 
     public static List<PropertyDefinition> getPropertyDefinitions() {
