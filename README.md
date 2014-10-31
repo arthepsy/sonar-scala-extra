@@ -10,7 +10,7 @@ Requirements
 
 Scapegoat plugin
 ----------------
-Creates rule repository and issues from [Scapegoat](https://github.com/sksamuel/scalac-scapegoat-plugin) report.  
+Imports [Scapegoat](https://github.com/sksamuel/scalac-scapegoat-plugin) inspections as rule repository and reflects as issues from generated report.  
 
 ### Configuration  
 
