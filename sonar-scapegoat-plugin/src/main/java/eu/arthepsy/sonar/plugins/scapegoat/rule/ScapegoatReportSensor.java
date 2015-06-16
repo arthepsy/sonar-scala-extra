@@ -134,6 +134,13 @@ public class ScapegoatReportSensor implements Sensor {
             warnFile = this.parseFilePath(warnFile);
             FilePredicates p = context.fileSystem().predicates();
             InputFile inputFile = context.fileSystem().inputFile(p.hasAbsolutePath(warnFile));
+            //handle relative path
+            if(inputFile == null){
+                File sourceFolder =  new File(context.fileSystem().baseDir(),context.settings().getString("sonar.sources"));
+                warnFile = new File(sourceFolder, warnFile).getAbsolutePath();
+                inputFile =  context.fileSystem().inputFile(p.hasAbsolutePath(warnFile));
+            }
+            
             if (inputFile != null) {
                 Resource resource = org.sonar.api.resources.File.create(inputFile.relativePath());
                 Issuable issuable = perspectives.as(Issuable.class, resource);
