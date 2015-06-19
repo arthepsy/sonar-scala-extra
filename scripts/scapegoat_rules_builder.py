@@ -134,6 +134,8 @@ class ScapegoatRuleRepositoryBuilder():
 				(filebase, extension) = os.path.splitext(filepath)
 				if extension != '.scala':
 					continue
+				if filebase.endswith('Stub'):
+					continue
 				f = open(filepath, 'r')
 				content = f.read()
 				f.close()
