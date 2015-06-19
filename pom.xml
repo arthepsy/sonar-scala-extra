@@ -110,7 +110,7 @@
                 <configuration>
                     <header>org/sonar/plugins/licenseheaders/MIT.txt</header>
                     <properties>
-                        <year>2014</year>
+                        <year>2015</year>
                         <owner>${dev.name}</owner>
                         <mailto>${dev.mail}</mailto>
                     </properties>

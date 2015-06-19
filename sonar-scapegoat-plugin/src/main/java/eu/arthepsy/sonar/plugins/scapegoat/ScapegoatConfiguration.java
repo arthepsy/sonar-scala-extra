@@ -1,6 +1,6 @@
 /*
  * Scapegoat
- * Copyright (C) 2014 Andris Raugulis
+ * Copyright (C) 2015 Andris Raugulis
  * moo@arthepsy.eu
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
