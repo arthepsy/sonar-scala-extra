@@ -24,6 +24,7 @@
 package eu.arthepsy.sonar.plugins.scapegoat;
 
 import com.google.common.collect.ImmutableList;
+//import eu.arthepsy.sonar.plugins.scapegoat.language.Scala;
 import eu.arthepsy.sonar.plugins.scapegoat.rule.ScapegoatQualityProfile;
 import eu.arthepsy.sonar.plugins.scapegoat.rule.ScapegoatReportSensor;
 import eu.arthepsy.sonar.plugins.scapegoat.rule.ScapegoatRulesDefinition;

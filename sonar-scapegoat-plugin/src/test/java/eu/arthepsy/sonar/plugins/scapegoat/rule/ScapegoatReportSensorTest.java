@@ -64,6 +64,8 @@ public class ScapegoatReportSensorTest {
     private DefaultFileSystem fileSystem;
     private Settings settings;
 
+    private static final String SOURCES_PROPERTY_KEY = "sonar.sources";
+
     @Rule
     public TemporaryFolder temp = new TemporaryFolder();
     private File baseDir;
@@ -79,6 +81,7 @@ public class ScapegoatReportSensorTest {
 
         sensor = new ScapegoatReportSensor(project, perspectives);
         fileSystem = new DefaultFileSystem();
+        fileSystem.setBaseDir(baseDir);
         settings = new Settings();
         when(context.fileSystem()).thenReturn(fileSystem);
         when(context.settings()).thenReturn(settings);
@@ -96,10 +99,14 @@ public class ScapegoatReportSensorTest {
         FileUtils.write(report,
             "<scapegoat>" +
                 "<warning line=\"69\" text=\"Unused method parameter\" snippet=\"Unused method parameter (val app: play.api.Application = _)\" level=\"Warning\" file=\"" + dirPrefix + ".src.app.foo.scala\" inspection=\"com.sksamuel.scapegoat.inspections.unneccesary.UnusedMethodParameter\"/>" +
-                "<warning line=\"123\" text=\"Use of Option.get\" level=\"Error\" file=\"" + dirPrefix + ".src.app.bar.scala\" inspection=\"com.sksamuel.scapegoat.inspections.option.OptionGet\"/>" +
+                "<warning line=\"123\" text=\"Use of Option.get\" level=\"Error\" file=\"bar.scala\" inspection=\"com.sksamuel.scapegoat.inspections.option.OptionGet\"/>" +
+                "<warning line=\"256\" text=\"Looks for interpolated strings that have no arguments\" level=\"Error\" file=\"src.foobar.scala\" inspection=\"com.sksamuel.scapegoat.inspections.string.EmptyInterpolatedString\"/> " +
             "</scapegoat>");
         fileSystem.add(this.createInputFile("src/app/foo.scala"));
         fileSystem.add(this.createInputFile("src/app/bar.scala"));
+        fileSystem.add(this.createInputFile("src/foobar.scala"));
+
+        settings.setProperty(SOURCES_PROPERTY_KEY, "src/app");
         settings.setProperty(ScapegoatConfiguration.REPORT_PATH_PROPERTY_KEY, report.getAbsolutePath());
 
         this.loadRules();
@@ -111,13 +118,15 @@ public class ScapegoatReportSensorTest {
         sensor.execute(context);
 
         ArgumentCaptor<Issue> argCaptor = ArgumentCaptor.forClass(Issue.class);
-        verify(issuable, times(2)).addIssue(argCaptor.capture());
+        verify(issuable, times(3)).addIssue(argCaptor.capture());
         List<Issue> values = argCaptor.getAllValues();
-        assertThat(values).hasSize(2);
+        assertThat(values).hasSize(3);
         assertThat(values.get(0).severity()).isEqualTo(Severity.MINOR);
         assertThat(values.get(0).line()).isEqualTo(69);
         assertThat(values.get(1).severity()).isEqualTo(Severity.MAJOR);
         assertThat(values.get(1).line()).isEqualTo(123);
+        assertThat(values.get(2).severity()).isEqualTo(Severity.MAJOR);
+        assertThat(values.get(2).line()).isEqualTo(256);
     }
 
     private InputFile createInputFile(String relativePath)
