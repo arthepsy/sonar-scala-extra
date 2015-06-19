@@ -7,12 +7,12 @@
     <parent>
         <groupId>eu.arthepsy.sonar.plugins</groupId>
         <artifactId>scala-extra</artifactId>
-        <version>1.1-SNAPSHOT</version>
+        <version>1.1</version>
     </parent>
 
     <groupId>eu.arthepsy.sonar.plugins</groupId>
     <artifactId>sonar-scapegoat-plugin</artifactId>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.1</version>
     <packaging>sonar-plugin</packaging>
 
     <name>Scapegoat</name>
