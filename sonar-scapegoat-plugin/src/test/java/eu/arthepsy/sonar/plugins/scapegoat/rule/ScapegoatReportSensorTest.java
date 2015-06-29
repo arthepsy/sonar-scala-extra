@@ -140,8 +140,8 @@ public class ScapegoatReportSensorTest {
         ScapegoatRulesDefinition def = new ScapegoatRulesDefinition();
         RulesDefinition.Context ruleContext = new RulesDefinition.Context();
         def.define(ruleContext);
-        for (RulesDefinition.Rule rule : ruleContext.repository(ScapegoatRulesDefinition.SCAPEGOAT_REPOSITORY).rules()) {
-            RuleKey ruleKey = RuleKey.of(ScapegoatRulesDefinition.SCAPEGOAT_REPOSITORY, rule.key());
+        for (RulesDefinition.Rule rule : ruleContext.repository(ScapegoatRulesDefinition.SCAPEGOAT_REPOSITORY_KEY).rules()) {
+            RuleKey ruleKey = RuleKey.of(ScapegoatRulesDefinition.SCAPEGOAT_REPOSITORY_KEY, rule.key());
             builder
                     .create(ruleKey)
                     .setInternalKey(rule.key())

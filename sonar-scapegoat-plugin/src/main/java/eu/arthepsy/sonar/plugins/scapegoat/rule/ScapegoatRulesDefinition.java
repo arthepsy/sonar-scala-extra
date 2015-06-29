@@ -36,66 +36,59 @@ import org.sonar.api.rule.Severity;
 import org.sonar.api.server.rule.RulesDefinition;
 import eu.arthepsy.sonar.plugins.scapegoat.language.Scala;
 import eu.arthepsy.sonar.plugins.scapegoat.util.XmlUtils;
+import org.sonar.api.utils.ValidationMessages;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.InputStream;
 
 public class ScapegoatRulesDefinition implements RulesDefinition {
 
-    public static final String SCAPEGOAT_REPOSITORY = "scapegoat";
+    public static final String SCAPEGOAT_REPOSITORY_KEY = "scapegoat";
+    public static final String SCAPEGOAT_REPOSITORY_NAME = "Scapegoat";
 
-    private static final Logger LOG = LoggerFactory.getLogger(ScapegoatRulesDefinition.class);
-    private static final String LOG_PREFIX = ScapegoatConfiguration.LOG_PREFIX;
+    protected InputStream getRulesStream() {
+        return getClass().getResourceAsStream(ScapegoatConfiguration.RULES_FILE);
+    }
 
     @Override
     public void define(Context context) {
-        NewRepository repository = context.createRepository(SCAPEGOAT_REPOSITORY, Scala.KEY).setName("Scapegoat");
-        SMInputFactory factory = XmlUtils.createFactory();
-        InputStream stream = getClass().getResourceAsStream("/scapegoat_rules.xml");
-        try {
-            SMHierarchicCursor rootC = factory.rootElementCursor(stream);
-            rootC.advance();
-            SMInputCursor ruleC = rootC.childElementCursor("rule");
-            while (ruleC.getNext() != null) {
-                this.processRule(repository, ruleC);
+        GenericRulesParser<NewRepository> parser = new GenericRulesParser<NewRepository>(this.getRulesStream()) {
+            @Override
+            void parseRule(NewRepository repository, SMInputCursor ruleCursor, ValidationMessages messages) throws XMLStreamException {
+                String key = null, name = null, description = null;
+                String severity = Severity.defaultSeverity();
+                String status = null;
+
+                SMInputCursor cursor = ruleCursor.childElementCursor();
+                while (cursor.getNext() != null) {
+                    String nodeName = cursor.getLocalName();
+                    if (StringUtils.equalsIgnoreCase("key", nodeName)) {
+                        key = XmlUtils.getNodeText(cursor);
+                    } else if (StringUtils.equalsIgnoreCase("name", nodeName)) {
+                        name = XmlUtils.getNodeText(cursor);
+                    } else if (StringUtils.equalsIgnoreCase("description", nodeName)) {
+                        description = XmlUtils.getNodeText(cursor);
+                    } else if (StringUtils.equalsIgnoreCase("severity", nodeName)) {
+                        severity = XmlUtils.getNodeText(cursor);
+                    } else if (StringUtils.equalsIgnoreCase("status", nodeName)) {
+                        status = XmlUtils.getNodeText(cursor);
+                    }
+                }
+                RulesDefinition.NewRule rule = repository.createRule(key)
+                        .setInternalKey(key)
+                        .setName(name)
+                        .setMarkdownDescription(description)
+                        .setSeverity(severity)
+                        .setTemplate(false);
+                if (status != null) {
+                    rule.setStatus(RuleStatus.valueOf(status));
+                }
             }
-        } catch (XMLStreamException e) {
-            LOG.error(LOG_PREFIX + "rules file is not valid", e);
-        } finally {
-            IOUtils.closeQuietly(stream);
-        }
+        };
+
+        final NewRepository repository = context.createRepository(SCAPEGOAT_REPOSITORY_KEY, Scala.KEY).setName(SCAPEGOAT_REPOSITORY_NAME);
+        parser.parse(repository);
+        parser.log(LoggerFactory.getLogger(ScapegoatRulesDefinition.class), ScapegoatConfiguration.LOG_PREFIX);
         repository.done();
     }
-
-    private void processRule(NewRepository repository, SMInputCursor ruleC) throws XMLStreamException {
-        String key = null, name = null, description = null;
-        String severity = Severity.defaultSeverity();
-        String status = null;
-
-        SMInputCursor cursor = ruleC.childElementCursor();
-        while (cursor.getNext() != null) {
-            String nodeName = cursor.getLocalName();
-            if (StringUtils.equalsIgnoreCase("key", nodeName)) {
-                key = XmlUtils.getNodeText(cursor);
-            } else if (StringUtils.equalsIgnoreCase("name", nodeName)) {
-                name = XmlUtils.getNodeText(cursor);
-            } else if (StringUtils.equalsIgnoreCase("description", nodeName)) {
-                description = XmlUtils.getNodeText(cursor);
-            } else if (StringUtils.equalsIgnoreCase("severity", nodeName)) {
-                severity = XmlUtils.getNodeText(cursor);
-            } else if (StringUtils.equalsIgnoreCase("status", nodeName)) {
-                status = XmlUtils.getNodeText(cursor);
-            }
-        }
-        RulesDefinition.NewRule rule = repository.createRule(key)
-            .setInternalKey(key)
-            .setName(name)
-            .setMarkdownDescription(description)
-            .setSeverity(severity)
-            .setTemplate(false);
-        if (status != null) {
-            rule.setStatus(RuleStatus.valueOf(status));
-        }
-    }
-
 }

@@ -24,12 +24,8 @@
 package eu.arthepsy.sonar.plugins.scapegoat.rule;
 
 import eu.arthepsy.sonar.plugins.scapegoat.ScapegoatConfiguration;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.codehaus.staxmate.SMInputFactory;
-import org.codehaus.staxmate.in.SMHierarchicCursor;
 import org.codehaus.staxmate.in.SMInputCursor;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.profiles.ProfileDefinition;
 import org.sonar.api.profiles.RulesProfile;
@@ -46,56 +42,42 @@ import java.io.InputStream;
 
 public class ScapegoatQualityProfile extends ProfileDefinition {
 
-    private static final String SCAPEGOAT_RULES_FILE = "/scapegoat_rules.xml";
     private static final String SCAPEGOAT_PROFILE = "Sonar way";
 
-    private static final Logger LOG = LoggerFactory.getLogger(ScapegoatQualityProfile.class);
-    private static final String LOG_PREFIX = ScapegoatConfiguration.LOG_PREFIX;
+    protected InputStream getRulesStream() {
+        return getClass().getResourceAsStream(ScapegoatConfiguration.RULES_FILE);
+    }
 
     @Override
     public RulesProfile createProfile(ValidationMessages validationMessages) {
+        GenericRulesParser<RulesProfile> parser = new GenericRulesParser<RulesProfile>(this.getRulesStream(), validationMessages) {
+            @Override
+            void parseRule(RulesProfile profile, SMInputCursor ruleCursor, ValidationMessages messages) throws XMLStreamException {
+                String key = null, severity = Severity.defaultSeverity(), status = null;
+
+                SMInputCursor cursor = ruleCursor.childElementCursor();
+                while (cursor.getNext() != null) {
+                    String nodeName = cursor.getLocalName();
+                    if (StringUtils.equalsIgnoreCase("key", nodeName)) {
+                        key = XmlUtils.getNodeText(cursor);
+                    } else if (StringUtils.equalsIgnoreCase("severity", nodeName)) {
+                        severity = XmlUtils.getNodeText(cursor);
+                    } else if (StringUtils.equalsIgnoreCase("status", nodeName)) {
+                        status = XmlUtils.getNodeText(cursor);
+                    }
+                }
+                if (status != null && RuleStatus.valueOf(status) != RuleStatus.READY) {
+                    return;
+                }
+                profile.activateRule(Rule.create(ScapegoatRulesDefinition.SCAPEGOAT_REPOSITORY_KEY, key), RulePriority.valueOf(severity));
+
+            }
+        };
+
         final RulesProfile profile = RulesProfile.create(SCAPEGOAT_PROFILE, Scala.KEY);
-        this.loadProfile(profile, validationMessages);
+        parser.parse(profile);
+        parser.log(LoggerFactory.getLogger(ScapegoatQualityProfile.class), ScapegoatConfiguration.LOG_PREFIX);
         return profile;
-    }
-
-    private void loadProfile(RulesProfile profile, ValidationMessages messages)
-    {
-        SMInputFactory factory = XmlUtils.createFactory();
-        InputStream stream = getClass().getResourceAsStream(SCAPEGOAT_RULES_FILE);
-        try {
-            SMHierarchicCursor rootC = factory.rootElementCursor(stream);
-            rootC.advance();
-            SMInputCursor ruleC = rootC.childElementCursor("rule");
-            while (ruleC.getNext() != null) {
-                this.processRule(profile, ruleC, messages);
-            }
-        } catch (XMLStreamException e) {
-            LOG.error(LOG_PREFIX + "rules file is not valid", e.getMessage());
-            messages.addErrorText("Scapegoat rules file is not valid: " + e.getMessage());
-        } finally {
-            IOUtils.closeQuietly(stream);
-        }
-    }
-
-    private void processRule(RulesProfile profile, SMInputCursor ruleC, ValidationMessages messages) throws XMLStreamException {
-        String key = null, severity = Severity.defaultSeverity(), status = null;
-
-        SMInputCursor cursor = ruleC.childElementCursor();
-        while (cursor.getNext() != null) {
-            String nodeName = cursor.getLocalName();
-            if (StringUtils.equalsIgnoreCase("key", nodeName)) {
-                key = XmlUtils.getNodeText(cursor);
-            } else if (StringUtils.equalsIgnoreCase("severity", nodeName)) {
-                severity = XmlUtils.getNodeText(cursor);
-            } else if (StringUtils.equalsIgnoreCase("status", nodeName)) {
-                status = XmlUtils.getNodeText(cursor);
-            }
-        }
-        if (status != null && RuleStatus.valueOf(status) != RuleStatus.READY) {
-            return;
-        }
-        profile.activateRule(Rule.create(ScapegoatRulesDefinition.SCAPEGOAT_REPOSITORY, key), RulePriority.valueOf(severity));
     }
 
 }

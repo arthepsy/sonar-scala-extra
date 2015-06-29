@@ -81,7 +81,7 @@ public class ScapegoatReportSensor implements Sensor {
             .name("ScapegoatReportSensor")
             .dependsOn(CoreMetrics.LINES)
             .workOnLanguages(Scala.KEY)
-            .createIssuesForRuleRepositories(ScapegoatRulesDefinition.SCAPEGOAT_REPOSITORY)
+            .createIssuesForRuleRepositories(ScapegoatRulesDefinition.SCAPEGOAT_REPOSITORY_KEY)
             .workOnFileTypes(InputFile.Type.MAIN);
     }
 
@@ -134,7 +134,7 @@ public class ScapegoatReportSensor implements Sensor {
         String warnFile = StringUtils.trim(cursor.getAttrValue("file"));
         String warnInspection = StringUtils.trim(cursor.getAttrValue("inspection"));
 
-        RuleKey ruleKey = RuleKey.of(ScapegoatRulesDefinition.SCAPEGOAT_REPOSITORY, warnInspection);
+        RuleKey ruleKey = RuleKey.of(ScapegoatRulesDefinition.SCAPEGOAT_REPOSITORY_KEY, warnInspection);
         ActiveRule rule = context.activeRules().find(ruleKey);
         if (rule != null) {
             warnFile = this.parseFilePath(warnFile);
