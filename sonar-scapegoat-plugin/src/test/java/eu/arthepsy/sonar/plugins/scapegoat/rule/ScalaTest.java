@@ -21,31 +21,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package eu.arthepsy.sonar.plugins.scapegoat;
+package eu.arthepsy.sonar.plugins.scapegoat.rule;
 
-import com.google.common.collect.ImmutableList;
-import org.sonar.api.PropertyType;
-import org.sonar.api.config.PropertyDefinition;
+import eu.arthepsy.sonar.plugins.scapegoat.language.Scala;
+import org.junit.Test;
 
-import java.util.List;
+import static org.fest.assertions.Assertions.assertThat;
 
-public final class ScapegoatConfiguration {
-    public static final String CATEGORY = "Scala";
-    public static final String SUBCATEGORY = "Scapegoat";
+public class ScalaTest {
 
-    public static final String LOG_PREFIX = "[scapegoat] ";
-    public static final String RULES_FILE = "/scapegoat_rules.xml";
-    public static final String REPORT_PATH_PROPERTY_KEY = "sonar.scala.scapegoat.reportPath";
-
-    public static List<PropertyDefinition> getPropertyDefinitions() {
-        ImmutableList.Builder<PropertyDefinition> properties = ImmutableList.builder();
-        properties.add(PropertyDefinition.builder(REPORT_PATH_PROPERTY_KEY)
-                .category(CATEGORY).subCategory(SUBCATEGORY)
-                .index(0).name("Scapegoat report path")
-                .description("Path to generated scapegoat xml report.")
-                .type(PropertyType.STRING).defaultValue("target/scapegoat-report/scapegoat.xml")
-                .build());
-        return properties.build();
+    @Test
+    public void test() {
+        Scala language = new Scala();
+        assertThat(language.getKey()).isEqualTo("scala");
+        assertThat(language.getName()).isEqualTo("Scala");
+        assertThat(language.getFileSuffixes()).containsOnly("scala");
     }
 
 }
