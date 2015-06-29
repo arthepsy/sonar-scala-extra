@@ -35,7 +35,8 @@ public class Scala extends AbstractLanguage {
     super(KEY, NAME);
   }
 
+  @Override
   public String[] getFileSuffixes() {
-    return FILE_SUFFIXES;
+      return FILE_SUFFIXES;
   }
 }
