@@ -93,7 +93,7 @@ public class ScapegoatReportSensor implements Sensor {
             if (! report.isAbsolute()) {
                 report = new File(context.fileSystem().baseDir(), reportPath);
             }
-            if (report != null && report.isFile()) {
+            if (report.isFile()) {
                 LOG.info(LOG_PREFIX + "analyzing report: " + reportPath);
                 this.parseReport(context, report);
                 return;
@@ -191,7 +191,7 @@ public class ScapegoatReportSensor implements Sensor {
         for (String sourceDirectory : StringUtils.stripAll(StringUtils.split(sources, ','))) {
             File sourceDirectoryFile = new File(baseDir, sourceDirectory);
             String sourceDirectoryPath = sourceDirectoryFile.toPath().normalize().toFile().getAbsolutePath();
-            if (sourceDirectoryPath != baseDirPath) {
+            if (! sourceDirectoryPath.equals(baseDirPath)) {
                 if (uniqueSourceDirectories.add(sourceDirectoryPath)) {
                     sourceDirectories.add(sourceDirectoryPath);
                 }
