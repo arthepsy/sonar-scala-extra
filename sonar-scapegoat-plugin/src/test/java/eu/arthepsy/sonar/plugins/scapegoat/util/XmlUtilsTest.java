@@ -21,18 +21,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package eu.arthepsy.sonar.plugins.scapegoat.rule;
+package eu.arthepsy.sonar.plugins.scapegoat.util;
 
-import eu.arthepsy.sonar.plugins.scapegoat.ScapegoatPlugin;
 import org.junit.Test;
 
-import static org.fest.assertions.Assertions.assertThat;
-
-public class ScapegoatPluginTest {
+public class XmlUtilsTest {
 
     @Test
-    public void testExtensionCount() {
-        assertThat(new ScapegoatPlugin().getExtensions().size()).isEqualTo(4);
+    public void testClassDefinition() {
+        ClassDefinition.testFinalClassDefinition(XmlUtils.class);
     }
 
 }

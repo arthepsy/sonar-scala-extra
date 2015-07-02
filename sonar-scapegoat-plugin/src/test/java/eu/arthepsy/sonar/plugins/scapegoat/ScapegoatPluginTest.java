@@ -21,21 +21,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package eu.arthepsy.sonar.plugins.scapegoat.rule;
+package eu.arthepsy.sonar.plugins.scapegoat;
 
-import eu.arthepsy.sonar.plugins.scapegoat.language.Scala;
 import org.junit.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
 
-public class ScalaTest {
+public class ScapegoatPluginTest {
 
     @Test
-    public void test() {
-        Scala language = new Scala();
-        assertThat(language.getKey()).isEqualTo("scala");
-        assertThat(language.getName()).isEqualTo("Scala");
-        assertThat(language.getFileSuffixes()).containsOnly("scala");
+    public void testExtensionCount() {
+        assertThat(new ScapegoatPlugin().getExtensions().size()).isEqualTo(4);
     }
 
 }

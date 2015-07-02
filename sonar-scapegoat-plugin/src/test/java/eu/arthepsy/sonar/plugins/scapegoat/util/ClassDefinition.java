@@ -21,10 +21,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package eu.arthepsy.sonar.plugins.scapegoat.rule;
+package eu.arthepsy.sonar.plugins.scapegoat.util;
 
-import eu.arthepsy.sonar.plugins.scapegoat.ScapegoatConfiguration;
-import org.junit.Test;
+import static org.junit.Assert.fail;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -33,24 +32,43 @@ import java.lang.reflect.Modifier;
 
 import static org.fest.assertions.Assertions.assertThat;
 
-public class ScapegoatConfigurationTest {
+public final class ClassDefinition {
 
-    @Test
-    public void testClassDefinition() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-        Class<?> clazz = ScapegoatConfiguration.class;
+    public static void testFinalClassDefinition(Class<?> clazz) {
+        testFinalClassDefinition(clazz, false);
+    }
+
+    public static void testFinalClassDefinition(Class<?> clazz, Boolean privateConstructor) {
         assertThat(Modifier.isFinal(clazz.getModifiers())).isTrue();
-        final Constructor<?> constructor = clazz.getDeclaredConstructor();
-        assertThat(constructor.isAccessible()).isFalse();
+        final Constructor<?> constructor;
+        try {
+            constructor = clazz.getDeclaredConstructor();
+        } catch (NoSuchMethodException e) {
+            fail(e.getMessage());
+            return;
+        }
+        if (privateConstructor) {
+            assertThat(Modifier.isPrivate(constructor.getModifiers())).isTrue();
+        }
+        constructor.setAccessible(true);
+        try {
+            constructor.newInstance();
+        } catch (InstantiationException e) {
+            fail(e.getMessage());
+            return;
+        } catch (IllegalAccessException e) {
+            fail(e.getMessage());
+            return;
+        } catch (InvocationTargetException e) {
+            fail(e.getMessage());
+            return;
+        }
+        constructor.setAccessible(false);
         for (final Method method: clazz.getMethods()) {
             if (method.getDeclaringClass().equals(clazz)) {
                 assertThat(Modifier.isStatic(method.getModifiers())).isTrue();
             }
         }
-    }
-
-    @Test
-    public void testPropertyCount() {
-        assertThat(ScapegoatConfiguration.getPropertyDefinitions().size()).isEqualTo(1);
     }
 
 }
