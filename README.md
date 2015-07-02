@@ -1,6 +1,7 @@
 Scala plugins for SonarQube
 ===========================
 [![build status](https://travis-ci.org/arthepsy/sonar-scala-extra.svg)](https://travis-ci.org/arthepsy/sonar-scala-extra/)
+[![Coverage Status](https://coveralls.io/repos/arthepsy/sonar-scala-extra/badge.svg?branch=master)](https://coveralls.io/r/arthepsy/sonar-scala-extra?branch=master)  
 
 Requirements
 ------------

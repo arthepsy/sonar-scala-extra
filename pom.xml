@@ -53,6 +53,9 @@
         <dev.mail>moo@arthepsy.eu</dev.mail>
 
         <sonar.version>4.5</sonar.version>
+
+        <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ssa</maven.build.timestamp.format>
+        <timestamp>${maven.build.timestamp}</timestamp>
     </properties>
 
     <dependencyManagement>
