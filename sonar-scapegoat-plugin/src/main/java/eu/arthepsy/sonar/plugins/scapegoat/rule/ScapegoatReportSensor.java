@@ -34,20 +34,18 @@ import org.codehaus.staxmate.in.SMInputCursor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.FilePredicates;
+import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.batch.rule.ActiveRule;
-import org.sonar.api.batch.sensor.Sensor;
-import org.sonar.api.batch.sensor.SensorContext;
-import org.sonar.api.batch.sensor.SensorDescriptor;
-import org.sonar.api.batch.sensor.issue.Issue;
-import org.sonar.api.batch.sensor.issue.IssueBuilder;
+import org.sonar.api.batch.Sensor;
+import org.sonar.api.batch.SensorContext;
 import org.sonar.api.component.ResourcePerspectives;
+import org.sonar.api.config.Settings;
 import org.sonar.api.issue.Issuable;
-import org.sonar.api.issue.internal.DefaultIssue;
-import org.sonar.api.measures.CoreMetrics;
+import org.sonar.api.issue.Issue;
+import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.resources.Project;
-import org.sonar.api.resources.Resource;
 import org.sonar.api.rule.RuleKey;
+import org.sonar.api.rules.ActiveRule;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.File;
@@ -66,47 +64,54 @@ public class ScapegoatReportSensor implements Sensor {
     private static final String SOURCES_PROPERTY_KEY = "sonar.sources";
     private static final String RESOLVED_SOURCES_KEY = "sonar.scala.scapegoat.resolved_sources";
 
-    private Project project;
+    private final Settings settings;
+    private final RulesProfile profile;
+    private final FileSystem fs;
     private ResourcePerspectives perspectives;
 
-    public ScapegoatReportSensor(Project project, ResourcePerspectives perspectives)
-    {
-        this.project = project;
+    public ScapegoatReportSensor(Settings settings, RulesProfile profile, FileSystem fs, ResourcePerspectives perspectives) {
+        this.fs = fs;
+        this.profile = profile;
+        this.settings = settings;
         this.perspectives = perspectives;
     }
 
     @Override
-    public void describe(SensorDescriptor descriptor) {
-        descriptor
-            .name("ScapegoatReportSensor")
-            .dependsOn(CoreMetrics.LINES)
-            .workOnLanguages(Scala.KEY)
-            .createIssuesForRuleRepositories(ScapegoatRulesDefinition.SCAPEGOAT_REPOSITORY_KEY)
-            .workOnFileTypes(InputFile.Type.MAIN);
+    public boolean shouldExecuteOnProject(Project project) {
+        return fs.hasFiles(fs.predicates().hasLanguage(Scala.KEY)) &&
+                !profile.getActiveRulesByRepository(ScapegoatRulesDefinition.SCAPEGOAT_REPOSITORY_KEY).isEmpty();
     }
 
     @Override
-    public void execute(SensorContext context) {
-        String reportPath = context.settings().getString(ScapegoatConfiguration.REPORT_PATH_PROPERTY_KEY);
+    public void analyse(Project project, SensorContext context) {
+        String reportPath = settings.getString(ScapegoatConfiguration.REPORT_PATH_PROPERTY_KEY);
+        File report = this.getReport(reportPath);
+        if (report != null) {
+            LOG.info(LOG_PREFIX + "analyzing report: " + String.valueOf(reportPath));
+            this.parseReport(report);
+        } else {
+            LOG.warn(LOG_PREFIX + "report not found: " + String.valueOf(reportPath));
+        }
+    }
+
+    private File getReport(String reportPath) {
         if (StringUtils.isNotBlank(reportPath)) {
             File report = new File(reportPath);
             if (! report.isAbsolute()) {
-                report = new File(context.fileSystem().baseDir(), reportPath);
+                report = new File(fs.baseDir(), reportPath);
             }
             if (report.isFile()) {
-                LOG.info(LOG_PREFIX + "analyzing report: " + reportPath);
-                this.parseReport(context, report);
-                return;
+                return report;
             }
         }
-        LOG.warn(LOG_PREFIX + "report not found: " + String.valueOf(reportPath));
+        return null;
     }
 
-    private void parseReport(SensorContext context, File report) {
+    private void parseReport(File report) {
         FileInputStream stream = null;
         try {
             stream = new FileInputStream(report);
-            this.parseReport(context, stream);
+            this.parseReport(stream);
         } catch (FileNotFoundException e) {
             LOG.error(LOG_PREFIX + " file not found error: " + e.getMessage());
         } finally {
@@ -114,54 +119,41 @@ public class ScapegoatReportSensor implements Sensor {
         }
     }
 
-    private void parseReport(SensorContext context, InputStream stream) {
+    private void parseReport(InputStream stream) {
         SMInputFactory factory = XmlUtils.createFactory();
         try {
             SMHierarchicCursor rootC = factory.rootElementCursor(stream);
             rootC.advance(); // scapegoat
             SMInputCursor ruleC = rootC.childElementCursor("warning");
             while (ruleC.getNext() != null) {
-                this.parseWarning(context, ruleC);
+                this.parseWarning(ruleC);
             }
         } catch (XMLStreamException e) {
             LOG.error(LOG_PREFIX + " xml error parsing report: " + e.getMessage());
         }
     }
 
-    private void parseWarning(SensorContext context, SMInputCursor cursor) throws XMLStreamException {
+    private void parseWarning(SMInputCursor cursor) throws XMLStreamException {
         String warnText = StringUtils.trim(cursor.getAttrValue("text"));
         int warnLine = Integer.valueOf(StringUtils.trim(cursor.getAttrValue("line")));
         String warnFile = StringUtils.trim(cursor.getAttrValue("file"));
         String warnInspection = StringUtils.trim(cursor.getAttrValue("inspection"));
 
         RuleKey ruleKey = RuleKey.of(ScapegoatRulesDefinition.SCAPEGOAT_REPOSITORY_KEY, warnInspection);
-        ActiveRule rule = context.activeRules().find(ruleKey);
+        ActiveRule rule = profile.getActiveRule(ruleKey.repository(), ruleKey.rule());
         if (rule != null) {
             warnFile = this.parseFilePath(warnFile);
-            InputFile inputFile = this.resolveFile(context, warnFile);
+            InputFile inputFile = this.resolveFile(warnFile);
             if (inputFile != null) {
-                Resource resource = org.sonar.api.resources.File.create(inputFile.relativePath());
-                Issuable issuable = perspectives.as(Issuable.class, resource);
+                Issuable issuable = perspectives.as(Issuable.class, inputFile);
                 if (issuable != null) {
-                    IssueBuilder builder = context.issueBuilder();
-                    Issue issue = builder
+                    Issue issue = issuable.newIssueBuilder()
                             .ruleKey(ruleKey)
-                            .onFile(inputFile)
-                            .atLine(warnLine)
-                            .severity(rule.severity().toString())
+                            .line(warnLine)
                             .message(warnText)
+                            .severity(rule.getSeverity().name())
                             .build();
-                    String componentKey = getComponentKey(project, resource);
-                    DefaultIssue di = new org.sonar.core.issue.DefaultIssueBuilder()
-                        .componentKey(componentKey)
-                        .projectKey(project.key())
-                        .ruleKey(RuleKey.of(issue.ruleKey().repository(), issue.ruleKey().rule()))
-                        .effortToFix(issue.effortToFix())
-                        .line(issue.line())
-                        .message(issue.message())
-                        .severity(issue.severity())
-                        .build();
-                    issuable.addIssue(di);
+                    issuable.addIssue(issue);
                 } else {
                     LOG.warn(LOG_PREFIX + "could not create issue from file: " + inputFile.toString());
                 }
@@ -173,21 +165,12 @@ public class ScapegoatReportSensor implements Sensor {
         }
     }
 
-    private String getComponentKey(Project project, Resource resource)
-    {
-        return new StringBuilder(400)
-            .append(project.key())
-            .append(":")
-            .append(resource.getKey())
-            .toString();
-    }
-
-    private String[] getSourceDirectories(SensorContext context) {
+    private String[] getSourceDirectories() {
         List<String> sourceDirectories = new ArrayList<String>();
         Set<String> uniqueSourceDirectories = new HashSet<String>();
-        File baseDir = context.fileSystem().baseDir();
+        File baseDir = fs.baseDir();
         String baseDirPath = baseDir.getAbsolutePath();
-        String sources = StringUtils.defaultString(context.settings().getString(SOURCES_PROPERTY_KEY));
+        String sources = StringUtils.defaultString(settings.getString(SOURCES_PROPERTY_KEY));
         for (String sourceDirectory : StringUtils.stripAll(StringUtils.split(sources, ','))) {
             File sourceDirectoryFile = new File(baseDir, sourceDirectory);
             String sourceDirectoryPath = sourceDirectoryFile.toPath().normalize().toFile().getAbsolutePath();
@@ -200,25 +183,25 @@ public class ScapegoatReportSensor implements Sensor {
         return sourceDirectories.toArray(new String[sourceDirectories.size()]);
     }
 
-    private InputFile resolveFile(SensorContext context, String filePath)
+    private InputFile resolveFile(String filePath)
     {
-        if (! context.settings().hasKey(RESOLVED_SOURCES_KEY)) {
-            String directories[] = this.getSourceDirectories(context);
-            context.settings().setProperty(RESOLVED_SOURCES_KEY, StringUtils.join(directories, ','));
+        if (! settings.hasKey(RESOLVED_SOURCES_KEY)) {
+            String directories[] = this.getSourceDirectories();
+            settings.setProperty(RESOLVED_SOURCES_KEY, StringUtils.join(directories, ','));
         }
-        String[] sourceDirectories = context.settings().getStringArray(RESOLVED_SOURCES_KEY);
-        FilePredicates p = context.fileSystem().predicates();
+        String[] sourceDirectories = settings.getStringArray(RESOLVED_SOURCES_KEY);
+        FilePredicates p = fs.predicates();
         String resolvedPath = parseFilePath(filePath);
         // absolute path
         if (new File(resolvedPath).isAbsolute()) {
-            return context.fileSystem().inputFile(p.hasAbsolutePath(resolvedPath));
+            return fs.inputFile(p.hasAbsolutePath(resolvedPath));
         }
         // relative path in source directory
         InputFile foundFile = null;
         List<String> foundInDirectories = new ArrayList<String>();
         for (String sourceDirectory: sourceDirectories) {
             File sourceFile = new File(sourceDirectory, resolvedPath);
-            InputFile sourceInputFile = context.fileSystem().inputFile(p.hasAbsolutePath(sourceFile.getAbsolutePath()));
+            InputFile sourceInputFile = fs.inputFile(p.hasAbsolutePath(sourceFile.getAbsolutePath()));
             if (sourceInputFile != null) {
                 foundFile = sourceInputFile;
                 foundInDirectories.add(sourceDirectory);
@@ -231,7 +214,7 @@ public class ScapegoatReportSensor implements Sensor {
             return null;
         }
         // relative path in base directory
-        return context.fileSystem().inputFile(p.hasRelativePath(resolvedPath));
+        return fs.inputFile(p.hasRelativePath(resolvedPath));
     }
 
     private String parseFilePath(String filePath)

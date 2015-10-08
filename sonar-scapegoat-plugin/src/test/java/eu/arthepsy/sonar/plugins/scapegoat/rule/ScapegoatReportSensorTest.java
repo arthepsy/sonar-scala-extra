@@ -29,6 +29,7 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.Appender;
 import eu.arthepsy.sonar.plugins.scapegoat.ScapegoatConfiguration;
+import eu.arthepsy.sonar.plugins.scapegoat.language.Scala;
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Rule;
@@ -39,23 +40,22 @@ import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
-import org.sonar.api.batch.rule.ActiveRules;
-import org.sonar.api.batch.rule.internal.ActiveRulesBuilder;
-import org.sonar.api.batch.sensor.SensorContext;
-import org.sonar.api.batch.sensor.internal.DefaultSensorDescriptor;
-import org.sonar.api.batch.sensor.issue.internal.DefaultIssueBuilder;
+import org.sonar.api.batch.SensorContext;
 import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.config.Settings;
 import org.sonar.api.issue.Issuable;
 import org.sonar.api.issue.Issue;
+import org.sonar.api.issue.internal.DefaultIssue;
+import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.resources.Project;
-import org.sonar.api.resources.Resource;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rule.Severity;
+import org.sonar.api.rules.RulePriority;
 import org.sonar.api.server.rule.RulesDefinition;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -68,13 +68,16 @@ public class ScapegoatReportSensorTest {
 
     private static final String SOURCES_PROPERTY_KEY = "sonar.sources";
 
+    private ScapegoatReportSensor sensor;
+    private Settings settings;
+    private RulesProfile profile;
+    private DefaultFileSystem fileSystem;
+    private ResourcePerspectives perspectives;
     private Project project;
     private SensorContext context;
-    private ResourcePerspectives perspectives;
     private Issuable issuable;
-    private ScapegoatReportSensor sensor;
-    private DefaultFileSystem fileSystem;
-    private Settings settings;
+    private Issuable.IssueBuilder issueBuilder;
+    private Issue issue;
     private File baseDir;
     private File report;
     private Appender<ILoggingEvent> mockAppender;
@@ -100,22 +103,22 @@ public class ScapegoatReportSensorTest {
         baseDir = temp.newFolder();
         report = new File(baseDir, "scapegoat-report.xml");
 
-        project = mock(Project.class);
-        context = mock(SensorContext.class);
-        perspectives = mock(ResourcePerspectives.class);
-        issuable = mock(Issuable.class);
-
-        when(project.key()).thenReturn("test-project");
-
-        sensor = new ScapegoatReportSensor(project, perspectives);
-
-        fileSystem = new DefaultFileSystem(baseDir);
-
         settings = new Settings();
         settings.setProperty(ScapegoatConfiguration.REPORT_PATH_PROPERTY_KEY, report.getAbsolutePath());
+        profile = RulesProfile.create("test-profile", Scala.KEY);
+        fileSystem = new DefaultFileSystem(baseDir);
+        perspectives = mock(ResourcePerspectives.class);
 
-        when(context.fileSystem()).thenReturn(fileSystem);
-        when(context.settings()).thenReturn(settings);
+        sensor = new ScapegoatReportSensor(settings, profile, fileSystem, perspectives);
+
+        project = mock(Project.class);
+        context = mock(SensorContext.class);
+
+        issuable = mock(Issuable.class);
+        issueBuilder = mock(Issuable.IssueBuilder.class);
+        issue = mock(Issue.class);
+
+        when(project.key()).thenReturn("test-project");
 
         Logger rootLogger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         mockAppender = mock(Appender.class);
@@ -123,9 +126,8 @@ public class ScapegoatReportSensorTest {
         rootLogger.addAppender(mockAppender);
     }
 
-    @Test
-    public void testDescriptor() {
-        sensor.describe(new DefaultSensorDescriptor());
+    private void runSensor() {
+        sensor.analyse(project, context);
     }
 
     @Test
@@ -137,7 +139,7 @@ public class ScapegoatReportSensorTest {
         this.addFile("src/app/foo.scala");
         this.loadRules();
         this.makeIssuable();
-        sensor.execute(context);
+        this.runSensor();
         this.verifyIssue(this.verifyIssues(1).get(0), Severity.MINOR, 64);
         this.verifyLogEvents(1);
     }
@@ -151,7 +153,7 @@ public class ScapegoatReportSensorTest {
         settings.setProperty(SOURCES_PROPERTY_KEY, "src/app");
         this.loadRules();
         this.makeIssuable();
-        sensor.execute(context);
+        this.runSensor();
         this.verifyIssue(this.verifyIssues(1).get(0), Severity.MAJOR, 128);
         this.verifyLogEvents(1);
     }
@@ -170,7 +172,7 @@ public class ScapegoatReportSensorTest {
         settings.setProperty(SOURCES_PROPERTY_KEY, "src/a, src/b");
         this.loadRules();
         this.makeIssuable();
-        sensor.execute(context);
+        this.runSensor();
         List<Issue> issues = this.verifyIssues(2);
         this.verifyIssue(issues.get(0), Severity.MAJOR, 256);
         this.verifyIssue(issues.get(1), Severity.INFO, 512);
@@ -187,7 +189,7 @@ public class ScapegoatReportSensorTest {
         settings.setProperty(SOURCES_PROPERTY_KEY, "src/main/scala");
         this.loadRules();
         this.makeIssuable();
-        sensor.execute(context);
+        this.runSensor();
         this.verifyIssue(this.verifyIssues(1).get(0), Severity.MINOR, 2048);
         this.verifyLogEvents(1);
     }
@@ -195,13 +197,13 @@ public class ScapegoatReportSensorTest {
     @Test
     public void testInvalidReportPath() throws IOException {
         settings.setProperty(ScapegoatConfiguration.REPORT_PATH_PROPERTY_KEY, "invalid-report.xml");
-        sensor.execute(context);
+        this.runSensor();
         settings.setProperty(ScapegoatConfiguration.REPORT_PATH_PROPERTY_KEY, "");
-        sensor.execute(context);
+        this.runSensor();
         settings.setProperty(ScapegoatConfiguration.REPORT_PATH_PROPERTY_KEY, "/");
-        sensor.execute(context);
+        this.runSensor();
         settings.setProperty(ScapegoatConfiguration.REPORT_PATH_PROPERTY_KEY, "./");
-        sensor.execute(context);
+        this.runSensor();
         List<LoggingEvent> logEvents = this.verifyLogEvents(4);
         this.verifyLogContains(logEvents.get(0), Level.WARN, "report not found");
         this.verifyLogContains(logEvents.get(1), Level.WARN, "report not found");
@@ -212,7 +214,7 @@ public class ScapegoatReportSensorTest {
     @Test
     public void testInvalidReportXml() throws IOException {
         FileUtils.write(report, "<xml");
-        sensor.execute(context);
+        this.runSensor();
         List<LoggingEvent> logEvents = this.verifyLogEvents(2);
         this.verifyLogContains(logEvents.get(1), Level.ERROR, "error parsing");
     }
@@ -225,7 +227,7 @@ public class ScapegoatReportSensorTest {
         settings.setProperty(SOURCES_PROPERTY_KEY, "src/main/scala");
         this.loadRules();
         this.makeIssuable();
-        sensor.execute(context);
+        this.runSensor();
         this.verifyIssues(0);
         List<LoggingEvent> logEvents = this.verifyLogEvents(2);
         this.verifyLogContains(logEvents.get(1), Level.WARN, "report source file not found");
@@ -239,7 +241,7 @@ public class ScapegoatReportSensorTest {
         this.addFile("foo.scala");
         settings.setProperty(SOURCES_PROPERTY_KEY, "src/main/scala");
         this.loadRules();
-        sensor.execute(context);
+        this.runSensor();
         this.verifyIssues(0);
         List<LoggingEvent> logEvents = this.verifyLogEvents(2);
         this.verifyLogContains(logEvents.get(1), Level.WARN, "could not create issue");
@@ -253,7 +255,7 @@ public class ScapegoatReportSensorTest {
         this.addFile("foo.scala");
         this.loadRules();
         this.makeIssuable();
-        sensor.execute(context);
+        this.runSensor();
         this.verifyIssues(0);
         List<LoggingEvent> logEvents = this.verifyLogEvents(2);
         this.verifyLogContains(logEvents.get(1), Level.WARN, "rule not active");
@@ -268,7 +270,7 @@ public class ScapegoatReportSensorTest {
         settings.setProperty(SOURCES_PROPERTY_KEY, "src/main/scala, ., src/main/scala-extra, src/main/scala");
         this.loadRules();
         this.makeIssuable();
-        sensor.execute(context);
+        this.runSensor();
         List<Issue> issues = this.verifyIssues(1);
         this.verifyIssue(issues.get(0), Severity.MINOR, 64);
         this.verifyLogEvents(1);
@@ -277,9 +279,20 @@ public class ScapegoatReportSensorTest {
 
     private void makeIssuable()
     {
-        when(perspectives.as(eq(Issuable.class), any(Resource.class))).thenReturn(issuable);
+        when(perspectives.as(eq(Issuable.class), any(InputFile.class))).thenReturn(issuable);
+
+        when(issuable.newIssueBuilder()).thenReturn(issueBuilder);
+
+        when(issueBuilder.ruleKey(any(RuleKey.class))).thenReturn(issueBuilder);
+        when(issueBuilder.line(anyInt())).thenReturn(issueBuilder);
+        when(issueBuilder.severity(anyString())).thenReturn(issueBuilder);
+        when(issueBuilder.message(anyString())).thenReturn(issueBuilder);
+        when(issueBuilder.effortToFix(anyDouble())).thenReturn(issueBuilder);
+        when(issueBuilder.build()).thenReturn(issue);
+
         when(issuable.addIssue(any(Issue.class))).thenReturn(true);
     }
+
 
     private void verifyIssue(Issue issue, String severity, Integer line)
     {
@@ -290,9 +303,34 @@ public class ScapegoatReportSensorTest {
 
     private List<Issue> verifyIssues(Integer count)
     {
-        ArgumentCaptor<Issue> issuesCaptor = ArgumentCaptor.forClass(Issue.class);
-        verify(issuable, times(count)).addIssue(issuesCaptor.capture());
-        List<Issue> issues = issuesCaptor.getAllValues();
+        List<Issue> issues = new ArrayList<>();
+        if (! (count > 0)) {
+            verify(issuable, never()).addIssue(issue);
+            return issues;
+        }
+        verify(issuable, times(count)).addIssue(issue);
+
+        ArgumentCaptor<Integer> lineCaptor = ArgumentCaptor.forClass(Integer.class);
+        verify(issueBuilder, times(count)).line(lineCaptor.capture());
+        ArgumentCaptor<String> messageCaptor = ArgumentCaptor.forClass(String.class);
+        verify(issueBuilder, times(count)).message(messageCaptor.capture());
+        ArgumentCaptor<String> severityCaptor = ArgumentCaptor.forClass(String.class);
+        verify(issueBuilder, times(count)).severity(severityCaptor.capture());
+
+        List<Integer> lines = lineCaptor.getAllValues();
+        List<String> messages = messageCaptor.getAllValues();
+        List<String> severities = severityCaptor.getAllValues();
+        assertThat(lines).hasSize(count);
+        assertThat(messages).hasSize(count);
+        assertThat(severities).hasSize(count);
+
+        for (int i = 0; i < count; i++) {
+            DefaultIssue issue = new DefaultIssue();
+            issue.setMessage(messages.get(i));
+            issue.setLine(lines.get(i));
+            issue.setSeverity(severities.get(i));
+            issues.add(issue);
+        }
         assertThat(issues).hasSize(count);
         return issues;
     }
@@ -325,22 +363,13 @@ public class ScapegoatReportSensorTest {
 
     private void loadRules()
     {
-        ActiveRulesBuilder builder = new ActiveRulesBuilder();
         ScapegoatRulesDefinition def = new ScapegoatRulesDefinition();
         RulesDefinition.Context ruleContext = new RulesDefinition.Context();
         def.define(ruleContext);
-        for (RulesDefinition.Rule rule : ruleContext.repository(ScapegoatRulesDefinition.SCAPEGOAT_REPOSITORY_KEY).rules()) {
-            RuleKey ruleKey = RuleKey.of(ScapegoatRulesDefinition.SCAPEGOAT_REPOSITORY_KEY, rule.key());
-            builder
-                    .create(ruleKey)
-                    .setInternalKey(rule.key())
-                    .setSeverity(rule.severity())
-                    .setLanguage("scala")
-                    .activate();
+        for (RulesDefinition.Rule ruleDefinition : ruleContext.repository(ScapegoatRulesDefinition.SCAPEGOAT_REPOSITORY_KEY).rules()) {
+            org.sonar.api.rules.Rule rule = org.sonar.api.rules.Rule.create(ScapegoatRulesDefinition.SCAPEGOAT_REPOSITORY_KEY, ruleDefinition.key());
+            profile.activateRule(rule, RulePriority.valueOf(ruleDefinition.severity()));
         }
-        ActiveRules activeRules = builder.build();
-        when(context.activeRules()).thenReturn(activeRules);
-        when(context.issueBuilder()).thenReturn(new DefaultIssueBuilder());
     }
 
 }
