@@ -25,6 +25,7 @@ package eu.arthepsy.sonar.plugins.scapegoat.rule;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.Appender;
 import eu.arthepsy.sonar.plugins.scapegoat.ScapegoatConfiguration;
@@ -76,7 +77,7 @@ public class ScapegoatReportSensorTest {
     private Settings settings;
     private File baseDir;
     private File report;
-    private Appender mockAppender;
+    private Appender<ILoggingEvent> mockAppender;
 
     private enum Warning {
         UnusedMethodParameter("<warning line=\"%d\" text=\"Unused method parameter\" snippet=\"Unused method parameter\" level=\"Warning\" file=\"%s\" inspection=\"com.sksamuel.scapegoat.inspections.unneccesary.UnusedMethodParameter\"/>"),
@@ -108,8 +109,7 @@ public class ScapegoatReportSensorTest {
 
         sensor = new ScapegoatReportSensor(project, perspectives);
 
-        fileSystem = new DefaultFileSystem();
-        fileSystem.setBaseDir(baseDir);
+        fileSystem = new DefaultFileSystem(baseDir);
 
         settings = new Settings();
         settings.setProperty(ScapegoatConfiguration.REPORT_PATH_PROPERTY_KEY, report.getAbsolutePath());

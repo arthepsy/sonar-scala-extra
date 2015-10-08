@@ -70,7 +70,6 @@ public class ScapegoatQualityProfile extends ProfileDefinition {
                     return;
                 }
                 profile.activateRule(Rule.create(ScapegoatRulesDefinition.SCAPEGOAT_REPOSITORY_KEY, key), RulePriority.valueOf(severity));
-
             }
         };
 
