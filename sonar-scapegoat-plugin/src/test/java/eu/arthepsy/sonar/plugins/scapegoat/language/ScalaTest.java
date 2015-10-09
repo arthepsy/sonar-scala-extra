@@ -32,8 +32,8 @@ public class ScalaTest {
     @Test
     public void test() {
         Scala language = new Scala();
-        assertThat(language.getKey()).isEqualTo("scala");
-        assertThat(language.getName()).isEqualTo("Scala");
+        assertThat(language.getKey()).as("Language key should be scala").isEqualTo("scala");
+        assertThat(language.getName()).as("Language name should be Scala").isEqualTo("Scala");
         assertThat(language.getFileSuffixes()).containsOnly("scala");
     }
 

@@ -38,7 +38,7 @@ public class ScapegoatConfigurationTest {
 
     @Test
     public void testPropertyCount() {
-        assertThat(ScapegoatConfiguration.getPropertyDefinitions().size()).isEqualTo(1);
+        assertThat(ScapegoatConfiguration.getPropertyDefinitions().size()).as("Configuration should have a single property").isEqualTo(1);
     }
 
 }

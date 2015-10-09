@@ -47,21 +47,21 @@ public class ScapegoatQualityProfileTest {
 
     @Test
     public void testRulesExistence() {
-        assertThat(profile.getRulesStream()).isNotNull();
+        assertThat(profile.getRulesStream()).as("Profile rule stream should be available").isNotNull();
     }
 
     @Test
     public void testRulesCount() {
         RulesProfile rulesProfile =  profile.createProfile(validationMessages);
-        assertThat(rulesProfile.getActiveRules().size()).isEqualTo(117);
+        assertThat(rulesProfile.getActiveRules().size()).as("Profile should contain 117 rules").isEqualTo(117);
     }
 
     @Test
     public void testValidationError() {
         when(profile.getRulesStream()).thenReturn(IOUtils.toInputStream("<xml"));
         RulesProfile rulesProfile =  profile.createProfile(validationMessages);
-        assertThat(rulesProfile.getActiveRules().size()).isEqualTo(0);
-        assertThat(validationMessages.getErrors().size()).isEqualTo(1);
+        assertThat(rulesProfile.getActiveRules().size()).as("There should be no active profile rules").isEqualTo(0);
+        assertThat(validationMessages.getErrors().size()).as("There should be single validation error message").isEqualTo(1);
     }
 
 }

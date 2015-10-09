@@ -37,10 +37,10 @@ public class ScapegoatRulesDefinitionTest {
         def.define(context);
 
         RulesDefinition.Repository repo = context.repository("scapegoat");
-        assertThat(repo).isNotNull();
-        assertThat(repo.name()).isEqualTo("Scapegoat");
-        assertThat(repo.language()).isEqualTo("scala");
-        assertThat(repo.rules()).hasSize(117);
+        assertThat(repo).as("Repository should be available").isNotNull();
+        assertThat(repo.name()).as("Repository name should be Scapegoat").isEqualTo("Scapegoat");
+        assertThat(repo.language()).as("Repository language should be scala").isEqualTo("scala");
+        assertThat(repo.rules()).as("Repository should contain 117 rules").hasSize(117);
     }
 
 }

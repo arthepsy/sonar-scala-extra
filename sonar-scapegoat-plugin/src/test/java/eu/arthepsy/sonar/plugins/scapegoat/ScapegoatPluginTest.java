@@ -31,7 +31,7 @@ public class ScapegoatPluginTest {
 
     @Test
     public void testExtensionCount() {
-        assertThat(new ScapegoatPlugin().getExtensions().size()).isEqualTo(4);
+        assertThat(new ScapegoatPlugin().getExtensions().size()).as("Plugin should load 4 extensions").isEqualTo(4);
     }
 
 }

@@ -296,9 +296,9 @@ public class ScapegoatReportSensorTest {
 
     private void verifyIssue(Issue issue, String severity, Integer line)
     {
-        assertThat(issue).isNotNull();
-        assertThat(issue.severity()).isEqualTo(severity);
-        assertThat(issue.line()).isEqualTo(line);
+        assertThat(issue).as("Issue should be available").isNotNull();
+        assertThat(issue.severity()).as("Issue should have severity of " + severity).isEqualTo(severity);
+        assertThat(issue.line()).as("Issue should be at line " + String.valueOf(line)).isEqualTo(line);
     }
 
     private List<Issue> verifyIssues(Integer count)
@@ -337,9 +337,9 @@ public class ScapegoatReportSensorTest {
 
     private void verifyLogContains(LoggingEvent event, Level level, String text)
     {
-        assertThat(event).isNotNull();
-        assertThat(event.getLevel()).isEqualTo(level);
-        assertThat(event.getMessage()).contains(text);
+        assertThat(event).as("Log event should be available").isNotNull();
+        assertThat(event.getLevel()).as("Log event should be at level " + String.valueOf(level)).isEqualTo(level);
+        assertThat(event.getMessage()).as("Log message should contain '" + text + "'").contains(text);
     }
 
     private List<LoggingEvent> verifyLogEvents(Integer count)
