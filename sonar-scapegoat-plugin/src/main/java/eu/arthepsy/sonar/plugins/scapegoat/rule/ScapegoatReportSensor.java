@@ -87,10 +87,10 @@ public class ScapegoatReportSensor implements Sensor {
         String reportPath = settings.getString(ScapegoatConfiguration.REPORT_PATH_PROPERTY_KEY);
         File report = this.getReport(reportPath);
         if (report != null) {
-            LOG.info(LOG_PREFIX + "analyzing report: " + String.valueOf(reportPath));
+            LOG.info("{} analyzing report: {}", LOG_PREFIX, reportPath);
             this.parseReport(report);
         } else {
-            LOG.warn(LOG_PREFIX + "report not found: " + String.valueOf(reportPath));
+            LOG.warn("{} report not found: {}", LOG_PREFIX , reportPath);
         }
     }
 
@@ -113,7 +113,7 @@ public class ScapegoatReportSensor implements Sensor {
             stream = new FileInputStream(report);
             this.parseReport(stream);
         } catch (FileNotFoundException e) {
-            LOG.error(LOG_PREFIX + " file not found error: " + e.getMessage());
+            LOG.error("{} file not found error: {}", LOG_PREFIX, e);
         } finally {
             IOUtils.closeQuietly(stream);
         }
@@ -129,20 +129,20 @@ public class ScapegoatReportSensor implements Sensor {
                 this.parseWarning(ruleC);
             }
         } catch (XMLStreamException e) {
-            LOG.error(LOG_PREFIX + " xml error parsing report: " + e.getMessage());
+            LOG.error("{} xml error parsing report: {}", LOG_PREFIX, e);
         }
     }
 
     private void parseWarning(SMInputCursor cursor) throws XMLStreamException {
         String warnText = StringUtils.trim(cursor.getAttrValue("text"));
-        int warnLine = Integer.valueOf(StringUtils.trim(cursor.getAttrValue("line")));
+        int warnLine = Integer.parseInt(StringUtils.trim(cursor.getAttrValue("line")));
         String warnFile = StringUtils.trim(cursor.getAttrValue("file"));
         String warnInspection = StringUtils.trim(cursor.getAttrValue("inspection"));
 
         RuleKey ruleKey = RuleKey.of(ScapegoatRulesDefinition.SCAPEGOAT_REPOSITORY_KEY, warnInspection);
         ActiveRule rule = profile.getActiveRule(ruleKey.repository(), ruleKey.rule());
         if (rule != null) {
-            warnFile = this.parseFilePath(warnFile);
+            warnFile = parseFilePath(warnFile);
             InputFile inputFile = this.resolveFile(warnFile);
             if (inputFile != null) {
                 Issuable issuable = perspectives.as(Issuable.class, inputFile);
@@ -155,13 +155,13 @@ public class ScapegoatReportSensor implements Sensor {
                             .build();
                     issuable.addIssue(issue);
                 } else {
-                    LOG.warn(LOG_PREFIX + "could not create issue from file: " + inputFile.toString());
+                    LOG.warn("{} could not create issue from file: {}", LOG_PREFIX, inputFile.toString());
                 }
             } else {
-                LOG.warn(LOG_PREFIX + "report source file not found: " + warnFile);
+                LOG.warn("{} report source file not found: {}", LOG_PREFIX, warnFile);
             }
         } else {
-            LOG.warn(LOG_PREFIX + "report rule not active: " + warnInspection);
+            LOG.warn("{} report rule not active: {}", LOG_PREFIX, warnInspection);
         }
     }
 
@@ -174,10 +174,8 @@ public class ScapegoatReportSensor implements Sensor {
         for (String sourceDirectory : StringUtils.stripAll(StringUtils.split(sources, ','))) {
             File sourceDirectoryFile = new File(baseDir, sourceDirectory);
             String sourceDirectoryPath = sourceDirectoryFile.toPath().normalize().toFile().getAbsolutePath();
-            if (! sourceDirectoryPath.equals(baseDirPath)) {
-                if (uniqueSourceDirectories.add(sourceDirectoryPath)) {
-                    sourceDirectories.add(sourceDirectoryPath);
-                }
+            if (! sourceDirectoryPath.equals(baseDirPath) && uniqueSourceDirectories.add(sourceDirectoryPath)) {
+                sourceDirectories.add(sourceDirectoryPath);
             }
         }
         return sourceDirectories.toArray(new String[sourceDirectories.size()]);
@@ -185,11 +183,6 @@ public class ScapegoatReportSensor implements Sensor {
 
     private InputFile resolveFile(String filePath)
     {
-        if (! settings.hasKey(RESOLVED_SOURCES_KEY)) {
-            String directories[] = this.getSourceDirectories();
-            settings.setProperty(RESOLVED_SOURCES_KEY, StringUtils.join(directories, ','));
-        }
-        String[] sourceDirectories = settings.getStringArray(RESOLVED_SOURCES_KEY);
         FilePredicates p = fs.predicates();
         String resolvedPath = parseFilePath(filePath);
         // absolute path
@@ -199,6 +192,11 @@ public class ScapegoatReportSensor implements Sensor {
         // relative path in source directory
         InputFile foundFile = null;
         List<String> foundInDirectories = new ArrayList<String>();
+        if (! settings.hasKey(RESOLVED_SOURCES_KEY)) {
+            String[] directories = this.getSourceDirectories();
+            settings.setProperty(RESOLVED_SOURCES_KEY, StringUtils.join(directories, ','));
+        }
+        String[] sourceDirectories = settings.getStringArray(RESOLVED_SOURCES_KEY);
         for (String sourceDirectory: sourceDirectories) {
             File sourceFile = new File(sourceDirectory, resolvedPath);
             InputFile sourceInputFile = fs.inputFile(p.hasAbsolutePath(sourceFile.getAbsolutePath()));
@@ -209,15 +207,15 @@ public class ScapegoatReportSensor implements Sensor {
         }
         if (foundInDirectories.size() == 1) {
             return foundFile;
-        } else if (foundInDirectories.size() > 0) {
-            LOG.warn(LOG_PREFIX + "source file " + resolvedPath + " found in multiple source directories: " + StringUtils.join(foundInDirectories, ','));
+        } else if (! foundInDirectories.isEmpty()) {
+            LOG.warn("{} source file {} found in multiple source directories: {}", LOG_PREFIX, resolvedPath, StringUtils.join(foundInDirectories, ','));
             return null;
         }
         // relative path in base directory
         return fs.inputFile(p.hasRelativePath(resolvedPath));
     }
 
-    private String parseFilePath(String filePath)
+    private static String parseFilePath(String filePath)
     {
         int last = filePath.lastIndexOf('.');
         if (last > 0) {

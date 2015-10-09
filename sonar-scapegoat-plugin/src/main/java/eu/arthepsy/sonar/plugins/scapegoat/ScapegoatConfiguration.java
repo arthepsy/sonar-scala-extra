@@ -37,6 +37,8 @@ public final class ScapegoatConfiguration {
     public static final String RULES_FILE = "/scapegoat_rules.xml";
     public static final String REPORT_PATH_PROPERTY_KEY = "sonar.scala.scapegoat.reportPath";
 
+    private ScapegoatConfiguration() {}
+
     public static List<PropertyDefinition> getPropertyDefinitions() {
         ImmutableList.Builder<PropertyDefinition> properties = ImmutableList.builder();
         properties.add(PropertyDefinition.builder(REPORT_PATH_PROPERTY_KEY)

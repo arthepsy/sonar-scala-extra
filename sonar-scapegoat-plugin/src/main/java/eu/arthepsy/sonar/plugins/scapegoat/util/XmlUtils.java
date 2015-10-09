@@ -32,6 +32,8 @@ import javax.xml.stream.XMLStreamException;
 
 public final class XmlUtils {
 
+    private XmlUtils() {}
+
     public static SMInputFactory createFactory() {
         XMLInputFactory xmlFactory = XMLInputFactory.newInstance();
         xmlFactory.setProperty(XMLInputFactory.IS_COALESCING, Boolean.TRUE);
@@ -39,8 +41,7 @@ public final class XmlUtils {
         xmlFactory.setProperty(XMLInputFactory.IS_NAMESPACE_AWARE, Boolean.FALSE);
         xmlFactory.setProperty(XMLInputFactory.SUPPORT_DTD, Boolean.FALSE);
         xmlFactory.setProperty(XMLInputFactory.IS_VALIDATING, Boolean.FALSE);
-        SMInputFactory inputFactory = new SMInputFactory(xmlFactory);
-        return inputFactory;
+        return new SMInputFactory(xmlFactory);
     }
 
     public static String getNodeText(SMInputCursor cursor) throws XMLStreamException {

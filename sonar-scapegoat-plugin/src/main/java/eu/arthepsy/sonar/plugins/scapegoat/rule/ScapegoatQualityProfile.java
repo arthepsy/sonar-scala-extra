@@ -53,7 +53,9 @@ public class ScapegoatQualityProfile extends ProfileDefinition {
         GenericRulesParser<RulesProfile> parser = new GenericRulesParser<RulesProfile>(this.getRulesStream(), validationMessages) {
             @Override
             void parseRule(RulesProfile profile, SMInputCursor ruleCursor, ValidationMessages messages) throws XMLStreamException {
-                String key = null, severity = Severity.defaultSeverity(), status = null;
+                String key = null;
+                String severity = Severity.defaultSeverity();
+                String status = null;
 
                 SMInputCursor cursor = ruleCursor.childElementCursor();
                 while (cursor.getNext() != null) {

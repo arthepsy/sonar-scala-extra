@@ -23,20 +23,21 @@
  */
 package eu.arthepsy.sonar.plugins.scapegoat.language;
 
+import org.apache.commons.lang.StringUtils;
 import org.sonar.api.resources.AbstractLanguage;
 
 public class Scala extends AbstractLanguage {
 
-  public static final String KEY = "scala";
-  public static final String NAME = "Scala";
-  public static final String[] FILE_SUFFIXES = {"scala"};
+    public static final String KEY = "scala";
+    public static final String NAME = "Scala";
+    public static final String DEFAULT_FILE_SUFFIXES = "scala";
 
-  public Scala() {
-    super(KEY, NAME);
-  }
+    public Scala() {
+        super(KEY, NAME);
+    }
 
-  @Override
-  public String[] getFileSuffixes() {
-      return FILE_SUFFIXES;
-  }
+    @Override
+    public String[] getFileSuffixes() {
+        return StringUtils.split(DEFAULT_FILE_SUFFIXES, ",");
+    }
 }

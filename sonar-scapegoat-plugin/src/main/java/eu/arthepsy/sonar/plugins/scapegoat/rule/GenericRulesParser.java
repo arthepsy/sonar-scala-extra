@@ -31,6 +31,7 @@ import org.codehaus.staxmate.in.SMInputCursor;
 import org.slf4j.Logger;
 import org.sonar.api.utils.ValidationMessages;
 
+import javax.annotation.Nullable;
 import javax.xml.stream.XMLStreamException;
 import java.io.InputStream;
 
@@ -64,18 +65,16 @@ public abstract class GenericRulesParser<T> {
         }
     }
 
-    public void log(Logger logger, String prefix) {
-        if (prefix == null) {
-            prefix = "";
-        }
+    public void log(Logger logger, @Nullable String prefix) {
+        String logPrefix = (prefix == null ? "" : prefix);
         for (String msg : messages.getErrors()) {
-            logger.error(prefix + msg);
+            logger.error("{}{}", logPrefix, msg);
         }
         for (String msg : messages.getWarnings()) {
-            logger.warn(prefix + msg);
+            logger.warn("{}{}", logPrefix, msg);
         }
         for (String msg : messages.getInfos()) {
-            logger.info(prefix + msg);
+            logger.info("{}{}", logPrefix, msg);
         }
     }
 

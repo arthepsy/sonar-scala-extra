@@ -24,12 +24,8 @@
 package eu.arthepsy.sonar.plugins.scapegoat.rule;
 
 import eu.arthepsy.sonar.plugins.scapegoat.ScapegoatConfiguration;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.codehaus.staxmate.SMInputFactory;
-import org.codehaus.staxmate.in.SMHierarchicCursor;
 import org.codehaus.staxmate.in.SMInputCursor;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.rule.RuleStatus;
 import org.sonar.api.rule.Severity;
@@ -55,7 +51,9 @@ public class ScapegoatRulesDefinition implements RulesDefinition {
         GenericRulesParser<NewRepository> parser = new GenericRulesParser<NewRepository>(this.getRulesStream()) {
             @Override
             void parseRule(NewRepository repository, SMInputCursor ruleCursor, ValidationMessages messages) throws XMLStreamException {
-                String key = null, name = null, description = null;
+                String key = null;
+                String name = null;
+                String description = null;
                 String severity = Severity.defaultSeverity();
                 String status = null;
 
