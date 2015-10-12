@@ -45,7 +45,7 @@ public class ScapegoatQualityProfile extends ProfileDefinition {
     private static final String SCAPEGOAT_PROFILE = "Sonar way";
 
     protected InputStream getRulesStream() {
-        return getClass().getResourceAsStream(ScapegoatConfiguration.RULES_FILE);
+        return ScapegoatQualityProfile.class.getClass().getResourceAsStream(ScapegoatConfiguration.RULES_FILE);
     }
 
     @Override
