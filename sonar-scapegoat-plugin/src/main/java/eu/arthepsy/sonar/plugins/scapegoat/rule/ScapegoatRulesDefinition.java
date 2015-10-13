@@ -43,7 +43,7 @@ public class ScapegoatRulesDefinition implements RulesDefinition {
     public static final String SCAPEGOAT_REPOSITORY_NAME = "Scapegoat";
 
     protected InputStream getRulesStream() {
-        return ScapegoatRulesDefinition.class.getClass().getResourceAsStream(ScapegoatConfiguration.RULES_FILE);
+        return this.getClass().getResourceAsStream(ScapegoatConfiguration.RULES_FILE);
     }
 
     @Override
