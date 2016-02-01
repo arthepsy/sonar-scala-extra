@@ -172,7 +172,10 @@ public class ScapegoatReportSensor implements Sensor {
         String baseDirPath = baseDir.getAbsolutePath();
         String sources = StringUtils.defaultString(settings.getString(SOURCES_PROPERTY_KEY));
         for (String sourceDirectory : StringUtils.stripAll(StringUtils.split(sources, ','))) {
-            File sourceDirectoryFile = new File(baseDir, sourceDirectory);
+            File sourceDirectoryFile = new File(sourceDirectory);
+            if (! sourceDirectoryFile.isAbsolute()) {
+                sourceDirectoryFile = new File(baseDir, sourceDirectory);
+            }
             String sourceDirectoryPath = sourceDirectoryFile.toPath().normalize().toFile().getAbsolutePath();
             if (! sourceDirectoryPath.equals(baseDirPath) && uniqueSourceDirectories.add(sourceDirectoryPath)) {
                 sourceDirectories.add(sourceDirectoryPath);

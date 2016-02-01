@@ -145,12 +145,26 @@ public class ScapegoatReportSensorTest {
     }
 
     @Test
-    public void testSingleSourceDirectoryFilePath() throws IOException {
+    public void testSingleRelativeSourceDirectory() throws IOException {
         FileUtils.write(report, "<scapegoat>" +
                 Warning.getWarning(Warning.OptionGet, 128, "foo.scala") +
                 "</scapegoat>");
         this.addFile("src/app/foo.scala");
         settings.setProperty(SOURCES_PROPERTY_KEY, "src/app");
+        this.loadRules();
+        this.makeIssuable();
+        this.runSensor();
+        this.verifyIssue(this.verifyIssues(1).get(0), Severity.MAJOR, 128);
+        this.verifyLogEvents(1);
+    }
+
+    @Test
+    public void testSingleAbsoluteSourceDirectory() throws IOException {
+        FileUtils.write(report, "<scapegoat>" +
+                Warning.getWarning(Warning.OptionGet, 128, "foo.scala") +
+                "</scapegoat>");
+        this.addFile("src/app/foo.scala");
+        settings.setProperty(SOURCES_PROPERTY_KEY, new File(baseDir, "src/app").getAbsolutePath());
         this.loadRules();
         this.makeIssuable();
         this.runSensor();
